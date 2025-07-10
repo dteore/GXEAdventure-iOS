@@ -4,6 +4,8 @@
 <dict>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>We use notifications to alert you about exclusive adventure drops and rewards you might be interested in.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to create personalized adventures and find nearby rewards for you.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

@@ -68,13 +68,7 @@ private struct RewardsHeaderView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(red: 217/255, green: 217/255, blue: 217/255))
 
-            Button { showSettings = true } label: {
-                Image(systemName: "gearshape")
-                    .font(.title2)
-                    .foregroundStyle(Color.headingColor)
-                    .padding(.top, 25)
-                    .padding(.trailing, 20)
-            }
+            SettingsButton(showSettings: $showSettings)
         }
     }
 }
@@ -129,7 +123,6 @@ private struct RewardCardView: View {
             Spacer()
 
             Button("More Info") {
-                print("More Info for \(reward.title) tapped!")
             }
             .buttonStyle(PressableButtonStyle(
                 normalColor: reward.isSoldOut ? .gray.opacity(0.5) : .primaryAppColor,

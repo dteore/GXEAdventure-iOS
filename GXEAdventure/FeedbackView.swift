@@ -95,7 +95,7 @@ struct FeedbackView: View {
                     Button("SUBMIT") {
                         submitFeedback()
                     }
-                    .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                    .primaryActionButton()
                     .padding(.top, 20)
                 }
                 .padding()
@@ -136,14 +136,6 @@ struct FeedbackView: View {
             }
         }
         
-        print("Feedback Submitted:")
-        print("- Message: \(feedbackMessage)")
-        print("- Recommends: \(recommendApp.debugDescription)")
-        print("- Wants Follow-up: \(wantsFollowUp)")
-        if wantsFollowUp {
-            print("- Name: \(name)")
-            print("- Email: \(email)")
-        }
         
         dismiss()
     }

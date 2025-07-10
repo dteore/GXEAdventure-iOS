@@ -64,11 +64,12 @@ struct AdventuresTabView: View {
             do {
                 let (adventure, details) = try await AdventureService.generateAdventure(
                     type: isRandom ? nil : selectedAdventureType,
-                    theme: isRandom ? nil : selectedTheme
+                    theme: isRandom ? nil : selectedTheme,
+                    userLocation: locationManager.lastKnownLocation
                 )
                 self.adventureTitle = adventure.title
                 self.adventureReward = adventure.reward
-                self.adventureDetails = details
+                self.adventureDetails = adventure.summary ?? "Your adventure is ready! Get ready to explore Trinity Bellwoods."
                 self.isAdventureReady = true
             } catch {
                 if !(error is CancellationError) {
@@ -136,24 +137,109 @@ struct AdventuresTabView: View {
 }
 
 // MARK: - Networking Models and Service
-struct Adventure: Codable {
+struct Adventure {
+    let id: String
     let title: String
-    let reward: String
+    let summary: String?
+    let type: String
+    // For display purposes, we'll calculate reward based on type
+    var reward: String {
+        switch type {
+        case "tour":
+            return "25 N"
+        case "scavenger_hunt":
+            return "100 N"
+        default:
+            return "50 N"
+        }
+    }
+}
+
+// API Response Models
+struct CreateAdventureResponse: Codable {
+    let adventure: AdventureData
+}
+
+struct AdventureData: Codable {
+    let id: String
+    let title: String
+    let summary: String?
+    let type: String
+    let playerId: String
+    // Include other fields as needed
+}
+
+struct CreateAdventureRequest: Codable {
+    let prompt: String
+    let playerProfile: PlayerProfile
+    let adventureType: String?
+    let location: String?
+    let origin: Origin?
+    let distanceKm: Double?
+    let segments: Int?
+}
+
+struct Origin: Codable {
+    let lat: Double
+    let lng: Double
+}
+
+struct PlayerProfile: Codable {
+    let id: String
+    let name: String?
 }
 
 struct AdventureService {
-    static func generateAdventure(type: String?, theme: String?) async throws -> (adventure: Adventure, details: String) {
+    static func generateAdventure(type: String?, theme: String?, userLocation: CLLocation?) async throws -> (adventure: Adventure, details: String) {
         guard let url = URL(string: "https://nvrse-ai.fly.dev/api/adventures") else {
             throw AppError(message: "Invalid API URL.")
         }
         let playerID = "test-player-id-\(UUID().uuidString.prefix(8))"
-        var promptText = "Take me on a random adventure."
+        
+        // Determine adventure type for API
+        var adventureType: String? = nil
         if let type = type {
-            promptText = "Take me on a \(type.replacingOccurrences(of: " (+", with: " (").replacingOccurrences(of: ")", with: "")))"
-            if let theme = theme { promptText += " through a \(theme) adventure." } else { promptText += " adventure." }
-        } else if let theme = theme { promptText = "Take me on a \(theme) adventure." }
-        let requestBody: [String: Any] = ["prompt": promptText, "playerProfile": ["id": playerID]]
-        let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
+            if type.contains("Tour") {
+                adventureType = "tour"
+            } else if type.contains("Scavenger Hunt") {
+                adventureType = "scavenger_hunt"
+            }
+        }
+        
+        // Build prompt text
+        var promptText = "Create a"
+        if let theme = theme {
+            promptText += " \(theme.lowercased().replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]", with: ""))"
+        }
+        if let type = adventureType {
+            promptText += " \(type.replacingOccurrences(of: "_", with: " "))"
+        } else {
+            promptText += " random adventure"
+        }
+        promptText += " in Trinity Bellwoods, Toronto"
+        
+        // Add location and adventure parameters
+        var origin: Origin? = nil
+        if let location = userLocation {
+            origin = Origin(lat: location.coordinate.latitude, lng: location.coordinate.longitude)
+        }
+        
+        // Set distance and segments based on adventure type
+        let distanceKm: Double? = adventureType == "tour" ? 1.5 : (adventureType == "scavenger_hunt" ? 2.5 : nil)
+        let segments: Int? = adventureType == "tour" ? 3 : (adventureType == "scavenger_hunt" ? 5 : nil)
+        
+        let requestBody = CreateAdventureRequest(
+            prompt: promptText,
+            playerProfile: PlayerProfile(id: playerID, name: nil),
+            adventureType: adventureType,
+            location: "Trinity Bellwoods, Toronto, ON",
+            origin: origin,
+            distanceKm: distanceKm,
+            segments: segments
+        )
+        
+        let encoder = JSONEncoder()
+        let jsonData = try encoder.encode(requestBody)
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -164,9 +250,29 @@ struct AdventureService {
             let errorBody = String(data: data, encoding: .utf8) ?? "Unknown server error."
             throw AppError(message: "Server returned status \(statusCode):\n\(errorBody)")
         }
-        let adventure = try JSONDecoder().decode(Adventure.self, from: data)
+        
+        // First, let's see what the API actually returns
         let details = String(data: data, encoding: .utf8) ?? "Could not decode adventure details."
-        return (adventure, details)
+        
+        // Try to decode the response
+        do {
+            let response = try JSONDecoder().decode(CreateAdventureResponse.self, from: data)
+            let adventureData = response.adventure
+            
+            // Convert to our simplified Adventure model
+            let adventure = Adventure(
+                id: adventureData.id,
+                title: adventureData.title,
+                summary: adventureData.summary,
+                type: adventureData.type
+            )
+            
+            return (adventure, details)
+        } catch {
+            print("Decoding error: \(error)")
+            print("Raw response: \(details)")
+            throw AppError(message: "Could not parse adventure data: \(error.localizedDescription)")
+        }
     }
 }
 
@@ -187,9 +293,7 @@ private struct HeaderSection: View {
                 Text("Uncover Trinity Bellwoods secrets! Adventures are 5-15m: scavenger hunts get you moving, while tours offer a relaxed pace.")
                     .font(.body).foregroundStyle(Color.bodyTextColor).padding(.top, 5)
             }.padding(.horizontal, 20).padding(.bottom, 45)
-            Button { showSettings = true } label: {
-                Image(systemName: "gearshape").font(.title2).foregroundStyle(Color.headingColor).padding(.top, 25).padding(.trailing, 20)
-            }
+            SettingsButton(showSettings: $showSettings)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(red: 217/255, green: 217/255, blue: 217/255))
@@ -203,7 +307,7 @@ private struct LocationRequiredSection: View {
             Text("To guide you on tours and verify scavenger hunt progress, we need your location. Please enable it in Settings.").font(.subheadline).foregroundStyle(Color.bodyTextColor).padding(.bottom, 25)
             Button("ENABLE LOCATION") {
                 if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
-            }.buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+            }.primaryActionButton()
         }.padding(.horizontal).padding(.vertical, 25)
     }
 }
@@ -212,19 +316,19 @@ private struct StartAdventureSection: View {
     @Binding var isLoading: Bool
     let generateAction: () -> Void
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Start your Adventure")
-                .font(.title.bold())
-                .foregroundStyle(Color.headingColor)
-            Text("Choose a random adventure, or customize yours with types and themes below.")
-                .font(.subheadline)
-                .foregroundStyle(Color.bodyTextColor)
-                .padding(.bottom, 25)
+        VStack(alignment: .leading, spacing: 0) {
+            SectionHeaderView(
+                title: "Start your Adventure",
+                subtitle: "Choose a random adventure, or customize yours with types and themes below."
+            )
             Button("GENERATE ADVENTURE (100-250 N)") {
                 isLoading = true
                 generateAction()
-            }.buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
-        }.padding(.horizontal).padding(.vertical, 25).background(Color.appBackground)
+            }
+            .primaryActionButton()
+            .padding(.horizontal)
+            .padding(.bottom, 25)
+        }.background(Color.appBackground)
     }
 }
 
@@ -309,9 +413,7 @@ private struct NotificationBannerView: View {
                     Text("Start the adventure now!").font(.system(size: 12, weight: .semibold))
                 }.foregroundStyle(.white)
                 Spacer()
-                Button(action: { withAnimation { showBanner = false } }) {
-                    Image(systemName: "xmark.circle.fill").font(.title2).foregroundStyle(.white.opacity(0.7))
-                }
+                CloseButton(action: { withAnimation { showBanner = false } }, color: .white.opacity(0.7))
             }
             .padding()
             .background(LinearGradient(colors: [.primaryAppColor, .primaryAppColor], startPoint: .topLeading, endPoint: .bottomTrailing))

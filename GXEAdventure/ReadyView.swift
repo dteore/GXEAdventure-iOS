@@ -28,14 +28,8 @@ struct ReadyView: View {
                 // Close button at the top right.
                 HStack {
                     Spacer() // Pushes the button to the right
-                    Button(action: {
-                        dismissAction() // Dismiss the ready screen
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.trailing, 30)
+                    CloseButton(action: dismissAction)
+                        .padding(.trailing, 30)
                 }
                 .padding(.top, 15)
 
@@ -71,10 +65,7 @@ struct ReadyView: View {
                     // The label only needs the text; the style provides the rest.
                     Text("START")
                 }
-                .buttonStyle(PressableButtonStyle(
-                    normalColor: .primaryAppColor,
-                    pressedColor: .pressedButtonColor
-                ))
+                .primaryActionButton()
                 .padding(.horizontal, 50) // Add horizontal padding to match other full-width buttons
                 .padding(.top, 40) // Space above the button
 

@@ -82,43 +82,25 @@ struct OnboardingView: View {
                         Button("ENABLE LOCATION") {
                             locationManager.requestLocationPermission()
                         }
-                        .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                        .primaryActionButton()
                         
-                        Button(action: nextStep) {
-                             Text("SKIP")
-                                .fontWeight(.semibold)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                        }
-                        .foregroundStyle(.gray)
-                        .background(.clear)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.5), lineWidth: 1))
+                        SecondaryButton(title: "SKIP", action: nextStep)
 
                     case 2: // Notifications Page
                         Button("ALLOW NOTIFICATIONS") {
                             notificationManager.requestNotificationPermission()
                         }
-                        .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                        .primaryActionButton()
 
-                        Button(action: nextStep) {
-                             Text("SKIP")
-                                .fontWeight(.semibold)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                        }
-                        .foregroundStyle(.gray)
-                        .background(.clear)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.5), lineWidth: 1))
+                        SecondaryButton(title: "SKIP", action: nextStep)
                             
                     case onboardingPages.indices.last: // Last Page
                         Button("START ADVENTURING!") { completeOnboarding() }
-                            .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                            .primaryActionButton()
 
                     default: // All other pages (e.g., Overview)
                         Button("NEXT") { nextStep() }
-                            .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                            .primaryActionButton()
                     }
                 }
                 // Removed fixed height to allow content to size naturally.
