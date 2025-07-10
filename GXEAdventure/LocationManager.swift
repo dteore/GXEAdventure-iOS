@@ -59,17 +59,15 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             // Note: For actual location usage, you'd typically start/stop updates based on app needs.
             // For permission demo, simply starting here.
             manager.startUpdatingLocation()
-            print("Location authorization granted: \(manager.authorizationStatus.rawValue)")
         case .denied, .restricted:
             // Location access denied or restricted. Handle accordingly (e.g., show an alert).
             manager.stopUpdatingLocation() // Stop updating if denied
-            print("Location authorization denied or restricted: \(manager.authorizationStatus.rawValue)")
         case .notDetermined:
             // Authorization status is not yet determined, typically on first launch before user responds.
-            print("Location authorization not determined.")
+            break
         @unknown default:
             // Handle future cases not known at the time of compilation.
-            print("Unknown location authorization status.")
+            break
         }
     }
 
@@ -78,7 +76,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         // Get the most recent location from the array.
         guard let location = locations.last else { return }
         lastKnownLocation = location // Update the published last known location.
-        print("Location updated: \(location.coordinate.latitude), \(location.coordinate.longitude)")
         // In a real app, you might process this location or stop updates if only one update is needed.
         // manager.stopUpdatingLocation() // Uncomment if you only need a single update.
     }
@@ -89,15 +86,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             switch clError.code {
             case .denied:
                 // User denied location access.
-                print("Location error: User denied access.")
+                break
             case .locationUnknown:
                 // Location data is currently unavailable.
-                print("Location error: Location unknown.")
+                break
             default:
-                print("Location error: \(clError.localizedDescription)")
+                break
             }
         } else {
-            print("Location manager failed with error: \(error.localizedDescription)")
         }
     }
 }

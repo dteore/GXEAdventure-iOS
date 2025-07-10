@@ -24,17 +24,13 @@ struct LoadingView: View {
                 // MARK: - Close Button
                 HStack {
                     Spacer() // Pushes the button to the far right.
-                    Button(action: {
+                    CloseButton(action: {
                         withAnimation {
                             // Call the cancel action and dismiss the view.
                             cancelAction()
                             isLoading = false
                         }
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.gray)
-                    }
+                    })
                     // Padding to match the original design.
                     .padding(.trailing, 30)
                     .padding(.top, 15)

@@ -30,25 +30,5 @@ struct SafariView: UIViewControllerRepresentable {
         // No updates needed for a static URL presentation.
     }
 
-    // If you need a Coordinator for SFSafariViewControllerDelegate methods, you would define it here.
-    /*
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    class Coordinator: NSObject, SFSafariViewControllerDelegate {
-        var parent: SafariView
-
-        init(_ parent: SafariView) {
-            self.parent = parent
-        }
-
-        // Example delegate method: called when the user taps 'Done' or dismisses the view controller
-        func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-            // Handle dismissal, e.g., update a binding to dismiss the sheet in SwiftUI
-            // parent.isPresented = false // If you had a binding for presentation
-        }
-    }
-    */
 }
 
