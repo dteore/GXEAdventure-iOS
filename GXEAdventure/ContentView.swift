@@ -43,10 +43,7 @@ struct ContentView: View {
 struct AdventuresTabView: View {
     @Binding var showSettings: Bool
     @State private var isLoading: Bool = false
-    @State private var isAdventureReady: Bool = false
-    @State private var adventureTitle: String = ""
-    @State private var adventureReward: String = ""
-    @State private var adventureDetails: String = ""
+    @State private var showScavengerHunt: Bool = false
     @State private var apiError: AppError? = nil
     @State private var adventureTask: Task<Void, Error>?
     @State private var selectedAdventureType: String? = "Tour"
@@ -62,14 +59,11 @@ struct AdventuresTabView: View {
         isLoading = true
         adventureTask = Task {
             do {
-                let (adventure, details) = try await AdventureService.generateAdventure(
+                _ = try await AdventureService.generateAdventure(
                     type: isRandom ? nil : selectedAdventureType,
                     theme: isRandom ? nil : selectedTheme
                 )
-                self.adventureTitle = adventure.title
-                self.adventureReward = adventure.reward
-                self.adventureDetails = details
-                self.isAdventureReady = true
+                self.showScavengerHunt = true
             } catch {
                 if !(error is CancellationError) {
                     self.apiError = AppError(message: error.localizedDescription)
@@ -86,6 +80,7 @@ struct AdventuresTabView: View {
 
     var body: some View {
         NavigationView {
+            // The main layout is a VStack to stack the banner and content vertically.
             VStack(spacing: 0) {
                 if isLocationAuthorized {
                     NotificationBannerView()
@@ -93,7 +88,7 @@ struct AdventuresTabView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        HeaderSection(showSettings: $showSettings)
+                        HeaderSection(showSettings: $showSettings, showScavengerHunt: $showScavengerHunt)
                         
                         if isLocationAuthorized {
                             StartAdventureSection(isLoading: $isLoading, generateAction: { generateAdventure(isRandom: true) })
@@ -118,16 +113,12 @@ struct AdventuresTabView: View {
             Group {
                 if isLoading {
                     LoadingView(isLoading: $isLoading, cancelAction: cancelAdventure)
-                } else if isAdventureReady {
-                    ReadyView(
-                        adventureTitle: $adventureTitle,
-                        adventureReward: $adventureReward,
-                        fullAdventureDetails: $adventureDetails,
-                        dismissAction: { isAdventureReady = false }
-                    )
                 }
             }
         )
+        .fullScreenCover(isPresented: $showScavengerHunt) {
+            ScavengerHuntView()
+        }
         .alert(item: $apiError) { error in
             Alert(title: Text("Error"), message: Text(error.message), dismissButton: .default(Text("OK")))
         }
@@ -173,6 +164,8 @@ struct AdventureService {
 // MARK: - Reusable Child Views
 private struct HeaderSection: View {
     @Binding var showSettings: Bool
+    @Binding var showScavengerHunt: Bool
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .leading, spacing: 5) {
@@ -186,6 +179,14 @@ private struct HeaderSection: View {
 
                 Text("Uncover Trinity Bellwoods secrets! Adventures are 5-15m: scavenger hunts get you moving, while tours offer a relaxed pace.")
                     .font(.body).foregroundStyle(Color.bodyTextColor).padding(.top, 5)
+                
+                Button("Start the hunt now") {
+                    showScavengerHunt = true
+                }
+                .font(.body.weight(.semibold))
+                .foregroundStyle(Color.primaryAppColor)
+                .padding(.top, 8)
+
             }.padding(.horizontal, 20).padding(.bottom, 45)
             Button { showSettings = true } label: {
                 Image(systemName: "gearshape").font(.title2).foregroundStyle(Color.headingColor).padding(.top, 25).padding(.trailing, 20)

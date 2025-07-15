@@ -17,11 +17,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var authorizationStatus: CLAuthorizationStatus?
     @Published var userLocation: CLLocation?
     @Published var deviceHeading: CLHeading?
+    @Published var smoothedHeading: Double = 0.0 // NEW: Smoothed heading for stable UI
+
+    // Factor for the low-pass filter. A higher value means more smoothing.
+    private let smoothingFactor: Double = 0.9
 
     override init() {
         super.init()
         manager.delegate = self
-        // Set higher accuracy for navigation-style features.
         manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
     }
 
@@ -51,12 +54,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     // MARK: - CLLocationManagerDelegate Methods
 
-    // FIX: Mark delegate methods as nonisolated and dispatch updates to the MainActor.
     nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         Task { @MainActor in
             self.authorizationStatus = manager.authorizationStatus
-            
-            // Start or stop updating based on the new status.
             if self.authorizationStatus == .authorizedWhenInUse || self.authorizationStatus == .authorizedAlways {
                 self.startUpdating()
             } else {
@@ -67,7 +67,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         Task { @MainActor in
-            // Update the user's location with the latest reading.
             self.userLocation = locations.last
         }
     }
@@ -75,11 +74,28 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         Task { @MainActor in
             self.deviceHeading = newHeading
+            
+            let currentHeading = newHeading.trueHeading
+            
+            // Apply a low-pass filter to smooth the heading value.
+            // This averages the new value with the previous smoothed value.
+            var newSmoothedHeading = self.smoothedHeading
+            if abs(currentHeading - newSmoothedHeading) > 180 {
+                if newSmoothedHeading < 180 {
+                    newSmoothedHeading += 360
+                } else {
+                    newSmoothedHeading -= 360
+                }
+            }
+            
+            newSmoothedHeading = (newSmoothedHeading * self.smoothingFactor) + (currentHeading * (1.0 - self.smoothingFactor))
+            
+            // Ensure the heading stays within the 0-360 range.
+            self.smoothedHeading = newSmoothedHeading.truncatingRemainder(dividingBy: 360)
         }
     }
 
     nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        // Printing to the console is thread-safe.
         print("Location Manager failed with error: \(error.localizedDescription)")
     }
 }

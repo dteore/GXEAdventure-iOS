@@ -179,7 +179,7 @@ private struct RedeemableItemView: View {
         HStack {
             VStack(alignment: .leading) {
                 Text(item.name)
-                    .font(.headline.weight(.bold))
+                    .font(.headline.bold()) // FIX: Corrected font weight syntax
                     .foregroundStyle(Color.headingColor)
                 Text("PIN: \(item.pin)")
                     .font(.subheadline)

@@ -1,89 +1,78 @@
 //
 //  ReadyView.swift
-//  AdventureApp
+//  GXEAdventure
 //
 //  Created by YourName on 2023-10-27.
-//  Copyright © 2023 YourCompany. All rights reserved.
+//  Copyright © 2025 YourCompany. All rights reserved.
 //
 
 import SwiftUI
 
-// IMPORTANT: Assuming AppStyles.swift with color and style definitions is available in the project.
-
 struct ReadyView: View {
     @Binding var adventureTitle: String
     @Binding var adventureReward: String
-    @Binding var fullAdventureDetails: String // To be displayed when "START" is pressed
-    var dismissAction: () -> Void // Action for the 'X' button
+    @Binding var fullAdventureDetails: String
+    var dismissAction: () -> Void
 
-    @State private var showingDetailsAlert: Bool = false // State for the alert when START is pressed
+    @State private var showingDetailsAlert: Bool = false
 
     var body: some View {
         ZStack {
-            // Background overlay using a color from the app's style guide.
             Color.appBackground
                 .ignoresSafeArea()
 
             VStack(spacing: 20) {
-                // Close button at the top right.
+                // MARK: - Close Button
                 HStack {
-                    Spacer() // Pushes the button to the right
-                    Button(action: {
-                        dismissAction() // Dismiss the ready screen
-                    }) {
+                    // FIX: Button moved to the leading edge (left).
+                    Button(action: dismissAction) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
                             .foregroundColor(.gray)
                     }
-                    .padding(.trailing, 30)
+                    .padding(.leading, 30) // FIX: Padding applied to the leading edge.
+                    
+                    Spacer() // Pushes the button to the left.
                 }
                 .padding(.top, 15)
 
+                Spacer()
 
-                Spacer() // Pushes content to the center
-
-                Image(systemName: "face.smiling.fill") // Smiley face icon
+                Image(systemName: "face.smiling.fill")
                     .font(.system(size: 125))
-                    .foregroundColor(Color.primaryAppColor)
+                    .foregroundColor(.primaryAppColor)
                     .padding(.bottom, 20)
 
                 Text("Ready!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.headingColor)
+                    .font(.largeTitle.bold())
+                    .foregroundStyle(Color.headingColor)
 
-                Text(adventureTitle) // Display the adventure title
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.bodyTextColor)
+                Text(adventureTitle)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(Color.bodyTextColor)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
-                Text("Reward: \(adventureReward)") // Display the reward
+                Text("Reward: \(adventureReward)")
                     .font(.title3)
-                    .foregroundColor(.bodyTextColor)
+                    .foregroundStyle(Color.bodyTextColor)
                     .padding(.top, 5)
 
-                // The "START" button now correctly uses the full-width style.
-                Button(action: {
-                    showingDetailsAlert = true // Show the alert with full details
-                }) {
-                    // The label only needs the text; the style provides the rest.
-                    Text("START")
+                Button("START") {
+                    showingDetailsAlert = true
                 }
                 .buttonStyle(PressableButtonStyle(
                     normalColor: .primaryAppColor,
                     pressedColor: .pressedButtonColor
                 ))
-                .padding(.horizontal, 50) // Add horizontal padding to match other full-width buttons
-                .padding(.top, 40) // Space above the button
+                .padding(.horizontal, 50)
+                .padding(.top, 40)
 
-                Spacer() // Pushes content to the center
+                Spacer()
             }
             .padding(.vertical, 50)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .alert(isPresented: $showingDetailsAlert) { // Alert to show full adventure details
+        .alert(isPresented: $showingDetailsAlert) {
             Alert(title: Text("Your Adventure Details"), message: Text(fullAdventureDetails), dismissButton: .default(Text("OK")))
         }
     }
@@ -94,8 +83,8 @@ struct ReadyView_Previews: PreviewProvider {
         ReadyView(
             adventureTitle: .constant("A Whispering Woods Tour"),
             adventureReward: .constant("50 N"),
-            fullAdventureDetails: .constant("Your full adventure details would go here, providing all the steps and information from the API response."),
-            dismissAction: {} // Empty action for preview
+            fullAdventureDetails: .constant("Your full adventure details..."),
+            dismissAction: {}
         )
     }
 }

@@ -8,12 +8,8 @@
 
 import SwiftUI
 
-// This is the entry point for your SwiftUI application.
-// The @main attribute indicates that this struct is the app's entry point.
 @main
 struct AdventureApp: App {
-    // @StateObject creates a single, persistent instance of each manager for the app's entire lifecycle.
-    // This is the correct way to initialize shared state and services.
     @StateObject private var notificationManager = NotificationManager()
     @StateObject private var locationManager = LocationManager()
 
@@ -30,8 +26,7 @@ struct AdventureApp: App {
 }
 
 /// A new view that acts as the main container, deciding which screen to show.
-/// This separates the view-switching logic from the app's setup and state creation.
-struct RootView: View {
+private struct RootView: View {
     // @AppStorage reads and writes the onboarding status to UserDefaults.
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
 
@@ -41,7 +36,6 @@ struct RootView: View {
     var body: some View {
         ZStack {
             // Conditionally display views based on the app's state.
-            // This logic was moved from AdventureApp.swift.
             if showSplash {
                 // The SplashView is responsible for updating its binding, which will hide it.
                 SplashView(showSplash: $showSplash)
@@ -53,9 +47,16 @@ struct RootView: View {
                 ContentView()
             }
         }
-        // It's best practice to define this color in your `AppStyles.swift`
-        // e.g., Color.appBackground, to avoid hardcoding values.
-        .background(Color("AppBackground").ignoresSafeArea())
+        // FIX: Use the explicitly defined color from the private extension below.
+        // This prevents the app from crashing by trying to find the color in the asset catalog.
+        .background(Color.rootAppBackground.ignoresSafeArea())
     }
 }
+
+// MARK: - Private Local Definitions
+// This private extension makes this file self-contained to prevent runtime crashes.
+private extension Color {
+    static let rootAppBackground = Color(red: 242/255, green: 242/255, blue: 242/255)
+}
+
 
