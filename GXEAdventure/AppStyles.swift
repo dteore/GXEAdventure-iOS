@@ -8,12 +8,7 @@
 
 import SwiftUI
 
-// MARK: - Shared Data Models
-/// A specific error type that is Identifiable, for use with SwiftUI alerts.
-struct AppError: Identifiable, Error {
-    let id = UUID()
-    let message: String
-}
+
 
 // MARK: - Centralized Color Definitions
 /// This extension holds all the custom colors used throughout the app.

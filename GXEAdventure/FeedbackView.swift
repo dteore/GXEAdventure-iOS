@@ -19,7 +19,7 @@ struct FeedbackView: View {
     @State private var email: String = ""
 
     // A single state variable to handle validation alerts
-    @State private var alertError: AppError?
+    @State private var alertError: ErrorWrapper?
 
     var body: some View {
         NavigationView {
@@ -112,8 +112,8 @@ struct FeedbackView: View {
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
-            .alert(item: $alertError) { error in
-                Alert(title: Text("Validation Error"), message: Text(error.message), dismissButton: .default(Text("OK")))
+            .alert(item: $alertError) { errorWrapper in
+                Alert(title: Text("Validation Error"), message: Text(errorWrapper.error.localizedDescription), dismissButton: .default(Text("OK")))
             }
         }
     }
@@ -121,17 +121,17 @@ struct FeedbackView: View {
     // MARK: - Validation and Submission Logic
     private func submitFeedback() {
         if feedbackMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            alertError = AppError(message: "Please type your feedback message.")
+            alertError = ErrorWrapper(error: NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Please type your feedback message."]))
             return
         }
 
         if wantsFollowUp {
             if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                alertError = AppError(message: "Name is required if you wish to be followed up.")
+                alertError = ErrorWrapper(error: NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Name is required if you wish to be followed up."]))
                 return
             }
             if !isValidEmail(email) {
-                alertError = AppError(message: "Please enter a valid email address.")
+                alertError = ErrorWrapper(error: NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Please enter a valid email address."]))
                 return
             }
         }
