@@ -10,40 +10,34 @@ import SwiftUI
 import CoreLocation
 
 struct ScavengerHuntView: View {
-    // Injected from the environment to get live location & heading updates.
     @EnvironmentObject var locationManager: LocationManager
     @Environment(\.dismiss) private var dismiss
 
-    // The target destination for the scavenger hunt.
-    // For testing, this is hardcoded to Trinity Bellwoods Park main entrance.
-    // In a real app, this would come from your adventure's metadata.
     private let targetLocation = CLLocation(latitude: 43.6498, longitude: -79.4197)
 
-    // State to manage the UI
-    @State private var hintState: HintState = .stuck
+    @State private var hintState: HintState = .cold
     @State private var showLocationHint = false
     @State private var showSuccessView = false
     @State private var showDistanceAlert = false
     
-    // The current progress of the adventure (0.0 to 1.0)
     private var adventureProgress: Double = 0.33
 
     var body: some View {
         ZStack(alignment: .top) {
-            // Main background color for the view
             Color.appBackground.ignoresSafeArea()
 
             VStack(spacing: 20) {
                 // MARK: - Header and Progress Bar
                 HStack {
+                    // FIX: Updated the button style and placement to be consistent
                     Button(action: { dismiss() }) {
-                        Image(systemName: "xmark")
-                            .font(.headline.weight(.bold))
-                            .foregroundColor(.primary)
-                            .padding(10)
-                            .background(Color.gray.opacity(0.2))
-                            .clipShape(Circle())
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.gray)
                     }
+                    .padding(.leading, 10)
+                    .padding(.top, 15)
+                    
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -51,21 +45,22 @@ struct ScavengerHuntView: View {
                 VStack(alignment: .leading, spacing: 5) {
                     Text("ADVENTURE PROGRESS")
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.bodyTextColor)
                     ProgressView(value: adventureProgress)
                         .tint(.primaryAppColor)
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 25)
 
                 // MARK: - Main Content Card
                 VStack(spacing: 30) {
                     VStack(spacing: 10) {
                         Text("Scavenger Hunt")
                             .font(.title.bold())
-                        Text("Where stone stands strong and iron twines,\nA gateway marks the changing times.\nNear Queen and Strachan, find the place—\nAn entrance grand, your next clue's base.")
+                            .foregroundStyle(.white)
+                        Text("Where stone stands strong and iron twines, a gateway marks the changing times. Near Queen and Strachan, find the place— an entrance grand, your next clue's base.")
                             .font(.body)
                             .multilineTextAlignment(.center)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.white.opacity(0.8))
                     }
 
                     CompassView(
@@ -76,11 +71,11 @@ struct ScavengerHuntView: View {
                     Button("Check-in") {
                         handleCheckIn()
                     }
-                    .buttonStyle(PressableButtonStyle(normalColor: .gray, pressedColor: .primary))
+                    .buttonStyle(PressableButtonStyle(normalColor: .gray, pressedColor: .primaryAppColor))
                     .padding(.horizontal, 80)
                 }
                 .padding(30)
-                .background(Color(.systemGray6))
+                .background(Color.headingColor)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .padding(.horizontal)
 
@@ -91,8 +86,12 @@ struct ScavengerHuntView: View {
                     showLocationHint = true
                 }
                 .font(.headline)
-                .foregroundStyle(.primary)
-                .alert("Location Hint", isPresented: $showLocationHint) {
+                .foregroundStyle(Color.primaryAppColor)
+                .padding(.top, 45)
+                
+                Spacer()
+
+                .alert("Location Revealed", isPresented: $showLocationHint) {
                     Button("OK", role: .cancel) { }
                 } message: {
                     Text("The target is near the main gates of Trinity Bellwoods Park at Queen St W & Strachan Ave.")
@@ -100,6 +99,7 @@ struct ScavengerHuntView: View {
             }
             .padding(.vertical)
         }
+        .preferredColorScheme(.light)
         .onAppear {
             locationManager.startUpdating()
         }
@@ -111,7 +111,6 @@ struct ScavengerHuntView: View {
                 rewardAmount: 150,
                 onNewAdventure: {
                     showSuccessView = false
-                    // This should eventually trigger a new adventure generation
                     dismiss()
                 },
                 onKeepGoing: {
@@ -128,18 +127,15 @@ struct ScavengerHuntView: View {
     private func handleCheckIn() {
         guard let userLocation = locationManager.userLocation else {
             print("User location not available for check-in.")
-            // Optionally show an alert that location is unavailable
             return
         }
         
         let distanceInMeters = userLocation.distance(from: targetLocation)
-        let checkInRadiusInMeters: Double = 60.96 // Approximately 200 feet
+        let checkInRadiusInMeters: Double = 15.24 // 50 feet
 
         if distanceInMeters <= checkInRadiusInMeters {
-            print("Check-in successful! Distance: \(distanceInMeters) meters.")
             showSuccessView = true
         } else {
-            print("Check-in failed. Too far away. Distance: \(distanceInMeters) meters.")
             showDistanceAlert = true
         }
     }
@@ -167,8 +163,8 @@ private struct CompassView: View {
                 .font(.system(size: 50, weight: .bold))
                 .foregroundColor(hintState.color)
                 .offset(y: -110)
-                .rotationEffect(Angle(degrees: (bearing - (locationManager.deviceHeading?.trueHeading ?? 0))))
-                .animation(.spring(), value: locationManager.deviceHeading)
+                .rotationEffect(Angle(degrees: (bearing - locationManager.smoothedHeading)))
+                .animation(.spring(), value: locationManager.smoothedHeading)
                 .animation(.easeInOut, value: hintState)
 
             Circle()
@@ -176,39 +172,27 @@ private struct CompassView: View {
                 .frame(width: 180, height: 180)
                 .shadow(color: .black.opacity(0.2), radius: 10)
                 .overlay(
-                    VStack {
-                        if hintState == .stuck {
-                            Text(hintState.rawValue)
-                                .font(.title.bold())
-                                .foregroundColor(.white.opacity(0.7))
-                            Text("Get a hint!")
-                                .font(.caption)
-                                .foregroundColor(.white)
-                        } else {
-                            Text(hintState.rawValue)
-                                .font(.title.bold())
-                                .foregroundColor(.white)
-                        }
-                    }
+                    Text(hintState.rawValue)
+                        .font(.title.bold())
+                        .foregroundColor(.white)
                 )
-                .onTapGesture {
-                    updateHintState()
-                }
         }
         .frame(height: 220)
+        .onAppear(perform: updateHintState)
         .onChange(of: distance) { _, _ in
-            if hintState != .stuck {
-                updateHintState()
-            }
+            updateHintState()
         }
     }
     
     private func updateHintState() {
         withAnimation(.easeInOut) {
+            let hotDistance: CLLocationDistance = 15.24 // 50 feet
+            let warmDistance: CLLocationDistance = 30.48 // 100 feet
+            
             switch distance {
-            case ...50:
+            case ...hotDistance:
                 hintState = .hot
-            case 51...200:
+            case (hotDistance + 0.1)...warmDistance:
                 hintState = .warm
             default:
                 hintState = .cold
@@ -217,16 +201,14 @@ private struct CompassView: View {
     }
 }
 
-// MARK: - Helper Enum and Extensions
-enum HintState: String {
-    case stuck = "STUCK?"
+// MARK: - Helper Enum and Extensions (Scoped to this file)
+fileprivate enum HintState: String {
     case cold = "COLD"
     case warm = "WARM"
     case hot = "HOT"
     
     var color: Color {
         switch self {
-        case .stuck: return .gray
         case .cold: return .blue
         case .warm: return .yellow
         case .hot: return .red
@@ -234,7 +216,7 @@ enum HintState: String {
     }
 }
 
-extension CLLocation {
+fileprivate extension CLLocation {
     func bearing(to destination: CLLocation) -> Double {
         let lat1 = self.coordinate.latitude.toRadians()
         let lon1 = self.coordinate.longitude.toRadians()
@@ -248,7 +230,7 @@ extension CLLocation {
     }
 }
 
-extension Double {
+fileprivate extension Double {
     func toRadians() -> Double { self * .pi / 180 }
     func toDegrees() -> Double { self * 180 / .pi }
 }

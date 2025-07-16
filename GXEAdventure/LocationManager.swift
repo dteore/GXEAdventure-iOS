@@ -17,6 +17,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var authorizationStatus: CLAuthorizationStatus?
     @Published var userLocation: CLLocation?
     @Published var deviceHeading: CLHeading?
+    @Published var smoothedHeading: Double = 0.0
 
     override init() {
         super.init()
@@ -75,6 +76,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         Task { @MainActor in
             self.deviceHeading = newHeading
+            // Simple smoothing: average the last few readings or apply a low-pass filter
+            // For a more robust solution, consider a proper low-pass filter or Kalman filter
+            if self.smoothedHeading == 0.0 {
+                self.smoothedHeading = newHeading.trueHeading
+            } else {
+                self.smoothedHeading = (self.smoothedHeading * 0.9) + (newHeading.trueHeading * 0.1)
+            }
         }
     }
 
