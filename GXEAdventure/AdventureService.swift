@@ -41,22 +41,39 @@ struct AdventureNodeMetadata: Codable {
 }
 
 struct AdventureService {
-    static func generateAdventure(type: String?, theme: String?) async throws -> (adventure: Adventure, details: String) {
+    static func generateAdventure(prompt: String, playerProfileID: String, type: String? = nil, origin: [String: Double]? = nil, distanceKm: Double? = nil, segments: Int? = nil, theme: String? = nil) async throws -> (adventure: Adventure, details: String) {
         guard let url = URL(string: "https://nvrse-ai.fly.dev/api/adventures") else {
             throw AppError(message: "Invalid API URL.")
         }
-        let playerID = "test-player-id-\(UUID().uuidString.prefix(8))"
-        var promptText = "Take me on a random adventure."
+        
+        var requestBody: [String: Any] = [
+            "prompt": prompt,
+            "playerProfile": ["id": playerProfileID]
+        ]
+        
         if let type = type {
-            promptText = "Take me on a \(type.replacingOccurrences(of: " (+", with: " (").replacingOccurrences(of: ")", with: "")))"
-            if let theme = theme { promptText += " through a \(theme) adventure." } else { promptText += " adventure." }
-        } else if let theme = theme { promptText = "Take me on a \(theme) adventure." }
-        let requestBody: [String: Any] = ["prompt": promptText, "playerProfile": ["id": playerID]]
+            requestBody["type"] = type
+        }
+        if let origin = origin {
+            requestBody["origin"] = origin
+        }
+        // Apply default values as per schema if not provided
+        requestBody["distancekm"] = distanceKm ?? 3.0
+        requestBody["segments"] = segments ?? 6
+        
+        if let theme = theme {
+            requestBody["theme"] = theme
+        }
+        
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
+        
+        // Log the request body for debugging
+        print("API Request Body: \(String(data: jsonData, encoding: .utf8) ?? "Unable to convert request body to string")")
+        
         let (data, response) = try await URLSession.shared.data(for: request)
         
         // Attempt to decode a common error structure from the API.

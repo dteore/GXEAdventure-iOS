@@ -35,7 +35,16 @@ struct AdventuresTabView: View {
         isLoading = true
         adventureTask = Task {
             do {
+                let playerID = "test-player-id-\(UUID().uuidString.prefix(8))"
+                var promptText = "Take me on a random adventure."
+                if let type = selectedAdventureType, !isRandom {
+                    promptText = "Take me on a \(type.replacingOccurrences(of: " (+", with: " (").replacingOccurrences(of: ")", with: "")))"
+                    if let theme = selectedTheme { promptText += " through a \(theme) adventure." } else { promptText += " adventure." }
+                } else if let theme = selectedTheme, !isRandom { promptText = "Take me on a \(theme) adventure." }
+
                 let (adventure, details) = try await AdventureService.generateAdventure(
+                    prompt: promptText,
+                    playerProfileID: playerID,
                     type: isRandom ? nil : selectedAdventureType,
                     theme: isRandom ? nil : selectedTheme
                 )
