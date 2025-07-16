@@ -10,8 +10,34 @@ import Foundation
 
 // MARK: - Networking Models and Service
 struct Adventure: Codable {
+    let id: String
+    let questId: String?
     let title: String
+    let location: String
+    let type: String
+    let theme: String?
+    let playerId: String
+    let summary: String
+    let status: String
+    let nodes: [AdventureNode]
+    let createdAt: String
+    let updatedAt: String
+    let waypointCount: Int
     let reward: String
+}
+
+struct AdventureNode: Codable, Identifiable {
+    let id: String
+    let type: String
+    let content: String
+    let metadata: AdventureNodeMetadata
+}
+
+struct AdventureNodeMetadata: Codable {
+    let orderIndex: Int
+    let isAnswerNode: Bool
+    let type: String?
+    let metadata: String?
 }
 
 struct AdventureService {
@@ -58,7 +84,7 @@ struct AdventureService {
         print("Raw API Response: \(String(data: data, encoding: .utf8) ?? "Unable to convert data to string")")
 
         let adventure = try JSONDecoder().decode(Adventure.self, from: data)
-        let details = String(data: data, encoding: .utf8) ?? "Could not decode adventure details."
+        let details = adventure.nodes.map { $0.content }.joined(separator: "\n\n")
         return (adventure, details)
     }
 }
