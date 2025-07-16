@@ -17,7 +17,7 @@ struct AdventuresTabView: View {
     @State private var adventureReward: String = ""
     @State private var adventureDetails: String = ""
     
-    @State private var apiError: ErrorWrapper? = nil
+    @State private var apiError: AppError? = nil
     @State private var adventureTask: Task<Void, Error>?
     @State private var selectedAdventureType: String? = "Tour"
     @State private var selectedTheme: String?
@@ -45,7 +45,11 @@ struct AdventuresTabView: View {
                 self.isAdventureReady = true
             } catch {
                 if !(error is CancellationError) {
-                    self.apiError = ErrorWrapper(error: error)
+                    if let appError = error as? AppError {
+                        self.apiError = appError
+                    } else {
+                        self.apiError = AppError(message: error.localizedDescription)
+                    }
                 }
             }
             self.isLoading = false
@@ -106,8 +110,8 @@ struct AdventuresTabView: View {
         .fullScreenCover(isPresented: $showScavengerHunt) {
             ScavengerHuntView()
         }
-        .alert(item: $apiError) { errorWrapper in
-            Alert(title: Text("Error"), message: Text(errorWrapper.error.localizedDescription), dismissButton: .default(Text("OK")))
+        .alert(item: $apiError) { error in
+            Alert(title: Text("Error"), message: Text(error.message), dismissButton: .default(Text("OK")))
         }
         .onAppear(perform: locationManager.fetchLocationStatus)
     }

@@ -29,7 +29,6 @@ struct ScavengerHuntView: View {
             VStack(spacing: 20) {
                 // MARK: - Header and Progress Bar
                 HStack {
-                    // FIX: Updated the button style and placement to be consistent
                     Button(action: { dismiss() }) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
@@ -61,6 +60,7 @@ struct ScavengerHuntView: View {
                             .font(.body)
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.white.opacity(0.8))
+                            .fixedSize(horizontal: false, vertical: true) // FIX: Allows text to wrap to multiple lines.
                     }
 
                     CompassView(
@@ -78,6 +78,7 @@ struct ScavengerHuntView: View {
                 .background(Color.headingColor)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .padding(.horizontal)
+                .padding(.top, 25)
 
                 Spacer()
 
@@ -87,7 +88,7 @@ struct ScavengerHuntView: View {
                 }
                 .font(.headline)
                 .foregroundStyle(Color.primaryAppColor)
-                .padding(.top, 45)
+                .padding(.top, 15)
                 
                 Spacer()
 

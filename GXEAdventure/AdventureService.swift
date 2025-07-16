@@ -17,7 +17,7 @@ struct Adventure: Codable {
 struct AdventureService {
     static func generateAdventure(type: String?, theme: String?) async throws -> (adventure: Adventure, details: String) {
         guard let url = URL(string: "https://nvrse-ai.fly.dev/api/adventures") else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid API URL."])
+            throw AppError(message: "Invalid API URL.")
         }
         let playerID = "test-player-id-\(UUID().uuidString.prefix(8))"
         var promptText = "Take me on a random adventure."
@@ -32,11 +32,31 @@ struct AdventureService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
         let (data, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 500
-            let errorBody = String(data: data, encoding: .utf8) ?? "Unknown server error."
-            throw NSError(domain: "", code: statusCode, userInfo: [NSLocalizedDescriptionKey: "Server returned status \(statusCode):\n\(errorBody)"])
+        
+        // Attempt to decode a common error structure from the API.
+        struct DecodableError: Decodable, LocalizedError {
+            let message: String
+            var errorDescription: String? { return message }
         }
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AppError(message: "Invalid HTTP response.")
+        }
+
+        if !(200...299).contains(httpResponse.statusCode) {
+            // Try to decode a specific error message from the server response.
+            if let decodedError = try? JSONDecoder().decode(DecodableError.self, from: data) {
+                throw AppError(message: decodedError.message)
+            } else {
+                // Fallback for unexpected error formats or non-JSON errors.
+                let errorBody = String(data: data, encoding: .utf8) ?? "Unknown server error."
+                throw AppError(message: "Server returned status \(httpResponse.statusCode):\n\(errorBody)")
+            }
+        }
+        
+        // Log the raw data for debugging purposes to ensure it matches the 'Adventure' struct.
+        print("Raw API Response: \(String(data: data, encoding: .utf8) ?? "Unable to convert data to string")")
+
         let adventure = try JSONDecoder().decode(Adventure.self, from: data)
         let details = String(data: data, encoding: .utf8) ?? "Could not decode adventure details."
         return (adventure, details)
