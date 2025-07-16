@@ -11,6 +11,8 @@ import SwiftUI
 // MARK: - Reusable Child Views
 struct HeaderSection: View {
     @Binding var showSettings: Bool
+    @Binding var showScavengerHunt: Bool
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .leading, spacing: 5) {
@@ -23,7 +25,17 @@ struct HeaderSection: View {
                     .padding(.top, 30)
 
                 Text("Uncover Trinity Bellwoods secrets! Adventures are 5-15m: scavenger hunts get you moving, while tours offer a relaxed pace.")
-                    .font(.body).foregroundStyle(Color.bodyTextColor).padding(.top, 5)
+                    .font(.body)
+                    .foregroundStyle(Color.bodyTextColor)
+                    .padding(.top, 5)
+                
+                Button("Start the hunt now") {
+                    showScavengerHunt = true
+                }
+                .font(.body.weight(.semibold))
+                .foregroundStyle(Color.primaryAppColor)
+                .padding(.top, 8)
+
             }.padding(.horizontal, 20).padding(.bottom, 45)
             Button { showSettings = true } label: {
                 Image(systemName: "gearshape").font(.title2).foregroundStyle(Color.headingColor).padding(.top, 25).padding(.trailing, 20)
@@ -37,8 +49,13 @@ struct HeaderSection: View {
 struct LocationRequiredSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Location Required for Adventure!").font(.title.bold()).foregroundStyle(Color.headingColor)
-            Text("To guide you on tours and verify scavenger hunt progress, we need your location. Please enable it in Settings.").font(.subheadline).foregroundStyle(Color.bodyTextColor).padding(.bottom, 25)
+            Text("Location Required for Adventure!")
+                .font(.title.bold())
+                .foregroundStyle(Color.headingColor)
+            Text("To guide you on tours and verify scavenger hunt progress, we need your location. Please enable it in Settings.")
+                .font(.subheadline)
+                .foregroundStyle(Color.bodyTextColor)
+                .padding(.bottom, 25)
             Button("ENABLE LOCATION") {
                 if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
             }.buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
@@ -156,3 +173,4 @@ struct NotificationBannerView: View {
         }
     }
 }
+

@@ -22,6 +22,9 @@ struct AdventuresTabView: View {
     @State private var selectedAdventureType: String? = "Tour"
     @State private var selectedTheme: String?
     
+    // New state to control the presentation of the scavenger hunt view
+    @State private var showScavengerHunt: Bool = false
+    
     @EnvironmentObject private var locationManager: LocationManager
     
     private var isLocationAuthorized: Bool {
@@ -63,7 +66,8 @@ struct AdventuresTabView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        HeaderSection(showSettings: $showSettings)
+                        // Pass the new binding to the HeaderSection
+                        HeaderSection(showSettings: $showSettings, showScavengerHunt: $showScavengerHunt)
                         
                         if isLocationAuthorized {
                             StartAdventureSection(isLoading: $isLoading, generateAction: { generateAdventure(isRandom: true) })
@@ -98,10 +102,14 @@ struct AdventuresTabView: View {
                 }
             }
         )
-        
+        // Present the ScavengerHuntView as a full screen cover
+        .fullScreenCover(isPresented: $showScavengerHunt) {
+            ScavengerHuntView()
+        }
         .alert(item: $apiError) { errorWrapper in
             Alert(title: Text("Error"), message: Text(errorWrapper.error.localizedDescription), dismissButton: .default(Text("OK")))
         }
         .onAppear(perform: locationManager.fetchLocationStatus)
     }
 }
+
