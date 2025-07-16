@@ -11,6 +11,8 @@ import SwiftUI
 // MARK: - Adventures Tab
 struct AdventuresTabView: View {
     @Binding var showSettings: Bool
+    
+    // State for the UI
     @State private var isLoading: Bool = false
     @State private var isAdventureReady: Bool = false
     @State private var adventureTitle: String = ""
@@ -18,12 +20,14 @@ struct AdventuresTabView: View {
     @State private var adventureDetails: String = ""
     
     @State private var apiError: AppError? = nil
-    @State private var adventureTask: Task<Void, Error>?
+    @State private var generatedAdventure: Adventure?
+    @State private var showScavengerHunt: Bool = false
+    
+    // State for user selections
     @State private var selectedAdventureType: String? = "Tour"
     @State private var selectedTheme: String?
     
-    // New state to control the presentation of the scavenger hunt view
-    @State private var showScavengerHunt: Bool = false
+    @State private var adventureTask: Task<Void, Error>?
     
     @EnvironmentObject private var locationManager: LocationManager
     
@@ -48,10 +52,22 @@ struct AdventuresTabView: View {
                     type: isRandom ? nil : selectedAdventureType,
                     theme: isRandom ? nil : selectedTheme
                 )
+                
                 self.adventureTitle = adventure.title
                 self.adventureReward = adventure.reward
                 self.adventureDetails = details
                 self.isAdventureReady = true
+                self.generatedAdventure = adventure // Assign the generated adventure
+                
+                print("Generated Adventure Type: \(adventure.type)")
+                print("isAdventureReady: \(self.isAdventureReady)")
+                
+                if adventure.type.lowercased() == "scavenger-hunt" {
+                    self.showScavengerHunt = true
+                } else if adventure.type.lowercased() == "tour" {
+                    // Tour view is handled by ReadyView now
+                }
+                
             } catch {
                 if !(error is CancellationError) {
                     if let appError = error as? AppError {
@@ -79,7 +95,6 @@ struct AdventuresTabView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        // Pass the new binding to the HeaderSection
                         HeaderSection(showSettings: $showSettings, showScavengerHunt: $showScavengerHunt)
                         
                         if isLocationAuthorized {
@@ -117,7 +132,9 @@ struct AdventuresTabView: View {
         )
         // Present the ScavengerHuntView as a full screen cover
         .fullScreenCover(isPresented: $showScavengerHunt) {
-            ScavengerHuntView()
+            if let adventure = generatedAdventure {
+                ScavengerHuntView(adventure: adventure)
+            }
         }
         .alert(item: $apiError) { error in
             Alert(title: Text("Error"), message: Text(error.message), dismissButton: .default(Text("OK")))

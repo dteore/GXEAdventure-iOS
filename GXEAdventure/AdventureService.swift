@@ -9,8 +9,8 @@
 import Foundation
 
 // MARK: - Networking Models and Service
-struct Adventure: Codable {
-    let id: String
+public struct Adventure: Codable {
+    public let id: String
     let questId: String?
     let title: String
     let location: String
@@ -26,14 +26,14 @@ struct Adventure: Codable {
     let reward: String
 }
 
-struct AdventureNode: Codable, Identifiable {
-    let id: String
+public struct AdventureNode: Codable, Identifiable {
+    public let id: String
     let type: String
     let content: String
     let metadata: AdventureNodeMetadata
 }
 
-struct AdventureNodeMetadata: Codable {
+public struct AdventureNodeMetadata: Codable {
     let orderIndex: Int
     let isAnswerNode: Bool
     let type: String?

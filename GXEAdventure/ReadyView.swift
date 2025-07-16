@@ -82,7 +82,7 @@ struct ReadyView_Previews: PreviewProvider {
     static var previews: some View {
         ReadyView(
             adventureTitle: .constant("A Whispering Woods Tour"),
-            adventureReward: .constant("50 N"),
+            adventureReward: .constant("XXXX N"),
             fullAdventureDetails: .constant("Your full adventure details..."),
             dismissAction: {}
         )

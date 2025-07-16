@@ -100,7 +100,7 @@ struct FeedbackView: View {
                 }
                 .padding()
             }
-            .navigationTitle("")
+            .navigationTitle("Share Feedback")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {

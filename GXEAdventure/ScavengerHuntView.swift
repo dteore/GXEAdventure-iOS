@@ -9,7 +9,8 @@
 import SwiftUI
 import CoreLocation
 
-struct ScavengerHuntView: View {
+public struct ScavengerHuntView: View {
+    let adventure: Adventure
     @EnvironmentObject var locationManager: LocationManager
     @Environment(\.dismiss) private var dismiss
 
@@ -22,7 +23,11 @@ struct ScavengerHuntView: View {
     
     private var adventureProgress: Double = 0.33
 
-    var body: some View {
+    public init(adventure: Adventure) {
+        self.adventure = adventure
+    }
+
+    public var body: some View {
         ZStack(alignment: .top) {
             Color.appBackground.ignoresSafeArea()
 
@@ -53,14 +58,14 @@ struct ScavengerHuntView: View {
                 // MARK: - Main Content Card
                 VStack(spacing: 30) {
                     VStack(spacing: 10) {
-                        Text("Scavenger Hunt")
+                        Text(adventure.title)
                             .font(.title.bold())
                             .foregroundStyle(.white)
-                        Text("Where stone stands strong and iron twines, a gateway marks the changing times. Near Queen and Strachan, find the place— an entrance grand, your next clue's base.")
+                        Text(adventure.nodes.first?.content ?? "No clue available.")
                             .font(.body)
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.white.opacity(0.8))
-                            .fixedSize(horizontal: false, vertical: true) // FIX: Allows text to wrap to multiple lines.
+                            .fixedSize(horizontal: false, vertical: true) // Allows text to wrap to multiple lines.
                     }
 
                     CompassView(
@@ -145,6 +150,7 @@ struct ScavengerHuntView: View {
 // MARK: - Compass View Component
 private struct CompassView: View {
     @EnvironmentObject var locationManager: LocationManager
+    
     let targetLocation: CLLocation
     @Binding var hintState: HintState
     
@@ -158,7 +164,7 @@ private struct CompassView: View {
         return userLocation.distance(from: targetLocation)
     }
 
-    var body: some View {
+    public var body: some View {
         ZStack {
             Image(systemName: "chevron.up")
                 .font(.system(size: 50, weight: .bold))
@@ -240,8 +246,25 @@ fileprivate extension Double {
 // MARK: - Preview
 struct ScavengerHuntView_Previews: PreviewProvider {
     static var previews: some View {
-        ScavengerHuntView()
+        ScavengerHuntView(adventure: Adventure(
+            id: UUID().uuidString,
+            questId: nil,
+            title: "Test Scavenger Hunt",
+            location: "Test Location",
+            type: "scavenger-hunt",
+            theme: "History",
+            playerId: "test-player-id",
+            summary: "A test scavenger hunt adventure.",
+            status: "created",
+            nodes: [
+                AdventureNode(id: UUID().uuidString, type: "story", content: "This is the first clue.", metadata: AdventureNodeMetadata(orderIndex: 0, isAnswerNode: false, type: nil, metadata: nil)),
+                AdventureNode(id: UUID().uuidString, type: "discovery", content: "This is the second clue.", metadata: AdventureNodeMetadata(orderIndex: 1, isAnswerNode: false, type: nil, metadata: nil))
+            ],
+            createdAt: "",
+            updatedAt: "",
+            waypointCount: 0,
+            reward: "100 N"
+        ))
             .environmentObject(LocationManager())
     }
 }
-
