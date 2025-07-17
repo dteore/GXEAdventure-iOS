@@ -1,4 +1,3 @@
-
 //
 //  ScavengerHuntView.swift
 //  GXEAdventure

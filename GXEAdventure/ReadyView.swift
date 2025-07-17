@@ -12,6 +12,7 @@ struct ReadyView: View {
     @Binding var adventureTitle: String
     @Binding var adventureReward: String
     @Binding var fullAdventureDetails: String
+    var onStartAdventure: () -> Void
     var dismissAction: () -> Void
 
     @State private var showingDetailsAlert: Bool = false
@@ -59,7 +60,7 @@ struct ReadyView: View {
                     .padding(.top, 5)
 
                 Button("START") {
-                    showingDetailsAlert = true
+                    dismissAction()
                 }
                 .buttonStyle(PressableButtonStyle(
                     normalColor: .primaryAppColor,
@@ -72,9 +73,6 @@ struct ReadyView: View {
             }
             .padding(.vertical, 50)
         }
-        .alert(isPresented: $showingDetailsAlert) {
-            Alert(title: Text("Your Adventure Details"), message: Text(fullAdventureDetails), dismissButton: .default(Text("OK")))
-        }
     }
 }
 
@@ -84,6 +82,7 @@ struct ReadyView_Previews: PreviewProvider {
             adventureTitle: .constant("A Whispering Woods Tour"),
             adventureReward: .constant("XXXX N"),
             fullAdventureDetails: .constant("Your full adventure details..."),
+            onStartAdventure: {}, // Provide an empty action for preview
             dismissAction: {}
         )
     }

@@ -14,7 +14,6 @@ struct AdventuresTabView: View {
     
     // State for the UI
     @State private var isLoading: Bool = false
-    @State private var isAdventureReady: Bool = false
     @State private var adventureTitle: String = ""
     @State private var adventureReward: String = ""
     @State private var adventureDetails: String = ""
@@ -22,6 +21,8 @@ struct AdventuresTabView: View {
     @State private var apiError: AppError? = nil
     @State private var generatedAdventure: Adventure?
     @State private var showScavengerHunt: Bool = false
+    @State private var showTourView: Bool = false
+    @State private var showReadyView: Bool = false // New state to control ReadyView presentation
     
     // State for user selections
     @State private var selectedAdventureType: String? = "Tour"
@@ -36,6 +37,7 @@ struct AdventuresTabView: View {
     }
     
     private func generateAdventure(isRandom: Bool) {
+        print("generateAdventure called. isRandom: \(isRandom)")
         isLoading = true
         adventureTask = Task {
             do {
@@ -46,27 +48,23 @@ struct AdventuresTabView: View {
                     if let theme = selectedTheme { promptText += " through a \(theme) adventure." } else { promptText += " adventure." }
                 } else if let theme = selectedTheme, !isRandom { promptText = "Take me on a \(theme) adventure." }
 
-                let (adventure, details) = try await AdventureService.generateAdventure(
+                let (adventure, _) = try await AdventureService.generateAdventure(
                     prompt: promptText,
                     playerProfileID: playerID,
                     type: isRandom ? nil : selectedAdventureType,
                     theme: isRandom ? nil : selectedTheme
                 )
                 
+                self.generatedAdventure = adventure // Assign the generated adventure
                 self.adventureTitle = adventure.title
                 self.adventureReward = adventure.reward
-                self.adventureDetails = details
-                self.isAdventureReady = true
-                self.generatedAdventure = adventure // Assign the generated adventure
+                self.adventureDetails = adventure.nodes.map { $0.content }.joined(separator: "\n\n")
                 
                 print("Generated Adventure Type: \(adventure.type)")
-                print("isAdventureReady: \(self.isAdventureReady)")
                 
-                if adventure.type.lowercased() == "scavenger-hunt" {
-                    self.showScavengerHunt = true
-                } else if adventure.type.lowercased() == "tour" {
-                    // Tour view is handled by ReadyView now
-                }
+                // Always show ReadyView first
+                self.showReadyView = true
+                print("AdventuresTabView: ReadyView should be shown.")
                 
             } catch {
                 if !(error is CancellationError) {
@@ -95,7 +93,7 @@ struct AdventuresTabView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        HeaderSection(showSettings: $showSettings, showScavengerHunt: $showScavengerHunt)
+                        HeaderSection(showSettings: $showSettings, showScavengerHunt: $showScavengerHunt, generateAction: { generateAdventure(isRandom: true) })
                         
                         if isLocationAuthorized {
                             StartAdventureSection(isLoading: $isLoading, generateAction: { generateAdventure(isRandom: true) })
@@ -120,20 +118,43 @@ struct AdventuresTabView: View {
             Group {
                 if isLoading {
                     LoadingView(isLoading: $isLoading, cancelAction: cancelAdventure)
-                } else if isAdventureReady {
-                    ReadyView(
-                        adventureTitle: $adventureTitle,
-                        adventureReward: $adventureReward,
-                        fullAdventureDetails: $adventureDetails,
-                        dismissAction: { isAdventureReady = false }
-                    )
                 }
             }
         )
-        // Present the ScavengerHuntView as a full screen cover
+        // Present the ReadyView
+        .fullScreenCover(isPresented: $showReadyView) {
+            if let adventure = generatedAdventure {
+                ReadyView(
+                    adventureTitle: $adventureTitle,
+                    adventureReward: $adventureReward,
+                    fullAdventureDetails: $adventureDetails,
+                    onStartAdventure: {
+                        // This closure is called when the START button in ReadyView is tapped
+                        if let generated = generatedAdventure {
+                            if generated.type.lowercased() == "scavenger-hunt" {
+                                self.showScavengerHunt = true
+                                print("AdventuresTabView: Launching ScavengerHuntView from ReadyView START button.")
+                            } else if generated.type.lowercased() == "tour" {
+                                self.showTourView = true
+                                print("AdventuresTabView: Launching TourView from ReadyView START button.")
+                            }
+                        }
+                        self.showReadyView = false // Dismiss ReadyView
+                    },
+                    dismissAction: { self.showReadyView = false }
+                )
+            }
+        }
+        // Present the ScavengerHuntView
         .fullScreenCover(isPresented: $showScavengerHunt) {
             if let adventure = generatedAdventure {
                 ScavengerHuntView(adventure: adventure)
+            }
+        }
+        // Present the TourView
+        .fullScreenCover(isPresented: $showTourView) {
+            if let adventure = generatedAdventure {
+                TourView(adventure: adventure)
             }
         }
         .alert(item: $apiError) { error in
@@ -142,4 +163,3 @@ struct AdventuresTabView: View {
         .onAppear(perform: locationManager.fetchLocationStatus)
     }
 }
-

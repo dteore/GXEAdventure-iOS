@@ -12,6 +12,7 @@ import SwiftUI
 struct HeaderSection: View {
     @Binding var showSettings: Bool
     @Binding var showScavengerHunt: Bool
+    let generateAction: () -> Void
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -30,7 +31,7 @@ struct HeaderSection: View {
                     .padding(.top, 5)
                 
                 Button("Start the hunt now") {
-                    showScavengerHunt = true
+                    generateAction()
                 }
                 .font(.body.weight(.semibold))
                 .foregroundStyle(Color.primaryAppColor)
