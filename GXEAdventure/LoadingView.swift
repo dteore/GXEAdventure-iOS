@@ -11,6 +11,7 @@ import SwiftUI
 struct LoadingView: View {
     @Binding var isLoading: Bool
     let cancelAction: () -> Void
+    @State private var showAbandonAlert: Bool = false
 
     var body: some View {
         ZStack {
@@ -21,10 +22,7 @@ struct LoadingView: View {
                 HStack {
                     // FIX: Button moved to the leading edge (left) with consistent padding.
                     Button(action: {
-                        withAnimation {
-                            cancelAction()
-                            isLoading = false
-                        }
+                        showAbandonAlert = true
                     }) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
@@ -59,6 +57,22 @@ struct LoadingView: View {
             }
             .padding(.vertical, 50)
         }
+        .overlay(
+            Group {
+                if showAbandonAlert {
+                    AbandonAdventureConfirmationView(
+                        onAbandon: {
+                            cancelAction()
+                            isLoading = false
+                            showAbandonAlert = false
+                        },
+                        onKeepPlaying: {
+                            showAbandonAlert = false
+                        }
+                    )
+                }
+            }
+        )
     }
 }
 

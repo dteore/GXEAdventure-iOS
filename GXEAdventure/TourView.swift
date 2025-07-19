@@ -14,6 +14,7 @@ public struct TourView: View {
     @State private var showSuccessView = false // New state to control SuccessView presentation
     @State private var currentNodeIndex: Int = 0 // Track current node displayed
     let generateNewAdventure: (Bool) -> Void
+    @State private var showAbandonAlert: Bool = false
     private var tourProgress: Double {
         guard !adventure.nodes.isEmpty else { return 0.0 }
         return Double(currentNodeIndex + 1) / Double(adventure.nodes.count)
@@ -25,7 +26,9 @@ public struct TourView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     // MARK: - Header and Progress Bar
                 HStack {
-                    Button(action: { dismiss() }) {
+                    Button(action: {
+                        showAbandonAlert = true
+                    }) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
                             .foregroundColor(.gray)
@@ -102,6 +105,21 @@ public struct TourView: View {
                 dismissParent: { dismiss() }
             )
         }
+        .overlay(
+            Group {
+                if showAbandonAlert {
+                    AbandonAdventureConfirmationView(
+                        onAbandon: {
+                            dismiss()
+                            showAbandonAlert = false
+                        },
+                        onKeepPlaying: {
+                            showAbandonAlert = false
+                        }
+                    )
+                }
+            }
+        )
     }
 }
 

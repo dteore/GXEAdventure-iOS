@@ -21,6 +21,7 @@ public struct ScavengerHuntView: View {
     @State private var showLocationHint = false
     @State private var showSuccessView = false
     @State private var showDistanceAlert = false
+    @State private var showAbandonAlert: Bool = false
     
     private var adventureProgress: Double = 0.33
 
@@ -36,7 +37,9 @@ public struct ScavengerHuntView: View {
             VStack(spacing: 20) {
                 // MARK: - Header and Progress Bar
                 HStack {
-                    Button(action: { dismiss() }) {
+                    Button(action: {
+                        showAbandonAlert = true
+                    }) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
                             .foregroundColor(.gray)
@@ -130,6 +133,21 @@ public struct ScavengerHuntView: View {
         .alert("Sorry, you aren't quite there yet.", isPresented: $showDistanceAlert) {
             Button("OK", role: .cancel) { }
         }
+        .overlay(
+            Group {
+                if showAbandonAlert {
+                    AbandonAdventureConfirmationView(
+                        onAbandon: {
+                            dismiss()
+                            showAbandonAlert = false
+                        },
+                        onKeepPlaying: {
+                            showAbandonAlert = false
+                        }
+                    )
+                }
+            }
+        )
     }
     
     private func handleCheckIn() {

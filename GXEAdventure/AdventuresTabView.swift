@@ -80,12 +80,12 @@ struct AdventuresTabView: View {
                 
             } catch {
                 print("AdventuresTabView: Error in generateAdventure: \(error)") // New diagnostic print
-                if !(error is CancellationError) {
-                    if let appError = error as? AppError {
-                        self.apiError = appError
-                    } else {
-                        self.apiError = AppError(message: error.localizedDescription)
-                    }
+                if let nsError = error as? NSError, nsError.domain == NSURLErrorDomain, nsError.code == NSURLErrorCancelled {
+                    self.apiError = nil // Suppress error for cancelled tasks
+                } else if let appError = error as? AppError {
+                    self.apiError = appError
+                } else {
+                    self.apiError = AppError(message: error.localizedDescription)
                 }
             }
             self.isLoading = false
