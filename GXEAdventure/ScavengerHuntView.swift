@@ -13,6 +13,7 @@ public struct ScavengerHuntView: View {
     let adventure: Adventure
     @EnvironmentObject var locationManager: LocationManager
     @Environment(\.dismiss) private var dismiss
+    let generateNewAdventure: (Bool) -> Void
 
     private let targetLocation = CLLocation(latitude: 43.6498, longitude: -79.4197)
 
@@ -23,8 +24,9 @@ public struct ScavengerHuntView: View {
     
     private var adventureProgress: Double = 0.33
 
-    public init(adventure: Adventure) {
+    public init(adventure: Adventure, generateNewAdventure: @escaping (Bool) -> Void) {
         self.adventure = adventure
+        self.generateNewAdventure = generateNewAdventure
     }
 
     public var body: some View {
@@ -119,10 +121,10 @@ public struct ScavengerHuntView: View {
                     showSuccessView = false
                     dismiss()
                 },
-                onKeepGoing: {
-                    showSuccessView = false
-                    dismiss()
-                }
+                onKeepGoing: { isRandom in
+                    generateNewAdventure(isRandom)
+                },
+                dismissParent: { dismiss() }
             )
         }
         .alert("Sorry, you aren't quite there yet.", isPresented: $showDistanceAlert) {
@@ -264,7 +266,9 @@ struct ScavengerHuntView_Previews: PreviewProvider {
             updatedAt: "",
             waypointCount: 0,
             reward: "100 N"
-        ))
+        ), generateNewAdventure: { isRandom in
+            print("Generate New Adventure from ScavengerHuntView Preview. isRandom: \(isRandom)")
+        })
             .environmentObject(LocationManager())
     }
 }

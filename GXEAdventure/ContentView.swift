@@ -17,7 +17,6 @@ struct ContentView: View {
     enum Tab {
         case adventures, rewards
     }
-
     var body: some View {
         TabView(selection: $selectedTab) {
             AdventuresTabView(showSettings: $showSettings)

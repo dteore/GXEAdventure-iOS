@@ -12,29 +12,46 @@ public struct TourView: View {
     let adventure: Adventure
     @Environment(\.dismiss) private var dismiss
     @State private var showSuccessView = false // New state to control SuccessView presentation
+    @State private var currentNodeIndex: Int = 0 // Track current node displayed
+    let generateNewAdventure: (Bool) -> Void
+    private var tourProgress: Double {
+        guard !adventure.nodes.isEmpty else { return 0.0 }
+        return Double(currentNodeIndex + 1) / Double(adventure.nodes.count)
+    }
 
     public var body: some View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    HStack {
-                        Spacer()
-                        Button(action: { dismiss() }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.gray)
-                        }
-                        .padding(.trailing, 10)
-                        .padding(.top, 15)
+                    // MARK: - Header and Progress Bar
+                HStack {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.gray)
                     }
-                    .padding(.horizontal)
+                    .padding(.leading, 10)
+                    .padding(.top, 15)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal)
+
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("TOUR PROGRESS")
+                        .font(.footnote)
+                        .foregroundStyle(Color.bodyTextColor)
+                    ProgressView(value: tourProgress)
+                        .tint(.primaryAppColor)
+                }
+                .padding(.horizontal, 25)
 
                     Text(adventure.title)
                         .font(.largeTitle.bold())
                         .foregroundStyle(Color.headingColor)
                         .padding(.horizontal)
 
-                    Text("Reward: \(adventure.reward)")
+                    Text("Reward: \(String(describing: adventure.reward))")
                         .font(.title2.weight(.semibold))
                         .foregroundStyle(Color.bodyTextColor)
                         .padding(.horizontal)
@@ -45,18 +62,27 @@ public struct TourView: View {
                         .padding(.horizontal)
                         .padding(.top, 20)
 
-                    Text(adventure.nodes.map { $0.content }.joined(separator: "\n\n"))
+                    Text(adventure.nodes[currentNodeIndex].content)
                         .font(.body)
                         .foregroundStyle(Color.bodyTextColor)
                         .padding(.horizontal)
                         .padding(.bottom, 20)
 
-                    Button("Complete Tour") {
-                        showSuccessView = true
+                    if currentNodeIndex < adventure.nodes.count - 1 {
+                        Button("Next") {
+                            currentNodeIndex += 1
+                        }
+                        .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                        .padding(.horizontal, 50)
+                        .padding(.top, 20)
+                    } else if adventure.nodes[currentNodeIndex].type.lowercased() == "ending" {
+                        Button("Complete Tour") {
+                            showSuccessView = true
+                        }
+                        .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                        .padding(.horizontal, 50)
+                        .padding(.top, 20)
                     }
-                    .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
-                    .padding(.horizontal, 50)
-                    .padding(.top, 20)
                 }
             }
             .background(Color.appBackground.ignoresSafeArea())
@@ -69,10 +95,11 @@ public struct TourView: View {
                     showSuccessView = false
                     dismiss()
                 },
-                onKeepGoing: {
+                onKeepGoing: { isRandom in
                     showSuccessView = false
-                    dismiss()
-                }
+                    generateNewAdventure(isRandom)
+                },
+                dismissParent: { dismiss() }
             )
         }
     }
@@ -101,6 +128,8 @@ struct TourView_Previews: PreviewProvider {
             updatedAt: "",
             waypointCount: 0,
             reward: "75 N"
-        ))
+        ), generateNewAdventure: { _ in
+            print("Generate New Adventure from TourView Preview")
+        })
     }
 }

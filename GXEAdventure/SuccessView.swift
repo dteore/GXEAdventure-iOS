@@ -14,7 +14,8 @@ struct SuccessView: View {
     
     // Actions passed from the parent view.
     let onNewAdventure: () -> Void
-    let onKeepGoing: () -> Void
+    let onKeepGoing: (Bool) -> Void
+    let dismissParent: () -> Void
     
     // State for the view's interactions.
     @State private var rating: Rating? = nil
@@ -35,6 +36,7 @@ struct SuccessView: View {
             
             Text("Nailed It!")
                 .font(.largeTitle.bold())
+                .foregroundStyle(Color.headingColor)
             
             Text("Reward: \(rewardAmount) N")
                 .font(.headline)
@@ -47,6 +49,7 @@ struct SuccessView: View {
                 VStack(spacing: 15) {
                     Text("Rate this Adventure")
                         .font(.headline)
+                        .foregroundStyle(Color.bodyTextColor)
                     
                     HStack(spacing: 30) {
                         RatingButton(rating: .like, selection: $rating)
@@ -69,16 +72,21 @@ struct SuccessView: View {
             VStack(spacing: 15) {
                 Button("NEW ADVENTURE") {
                     onNewAdventure()
+                    dismissParent()
                 }
                 .buttonStyle(SecondaryActionButtonStyle())
                 
                 Button("KEEP GOING") {
-                    onKeepGoing()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // Small delay to allow dismissal
+                        onKeepGoing(true)
+                        dismissParent()
+                    }
                 }
                 .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
             }
         }
         .padding()
+        .background(Color.appBackground.ignoresSafeArea())
         .sheet(isPresented: $showFeedbackSheet) {
             FeedbackView()
         }
@@ -147,7 +155,10 @@ struct SuccessView_Previews: PreviewProvider {
         SuccessView(
             rewardAmount: 150,
             onNewAdventure: { print("New Adventure Tapped") },
-            onKeepGoing: { print("Keep Going Tapped") }
+            onKeepGoing: { _ in
+                print("Keep Going Tapped in preview")
+            },
+            dismissParent: { print("Dismiss Parent from preview") }
         )
     }
 }

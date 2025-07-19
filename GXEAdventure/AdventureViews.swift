@@ -30,9 +30,6 @@ struct HeaderSection: View {
                     .foregroundStyle(Color.bodyTextColor)
                     .padding(.top, 5)
                 
-                Button("Start the hunt now") {
-                    generateAction()
-                }
                 .font(.body.weight(.semibold))
                 .foregroundStyle(Color.primaryAppColor)
                 .padding(.top, 8)

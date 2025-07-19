@@ -161,13 +161,13 @@ struct AdventuresTabView: View {
         // Present the ScavengerHuntView
         .fullScreenCover(isPresented: $showScavengerHunt) {
             if let adventure = generatedAdventure {
-                ScavengerHuntView(adventure: adventure)
+                ScavengerHuntView(adventure: adventure, generateNewAdventure: generateAdventure)
             }
         }
         // Present the TourView
         .fullScreenCover(isPresented: $showTourView) {
             if let adventure = generatedAdventure {
-                TourView(adventure: adventure)
+                TourView(adventure: adventure, generateNewAdventure: generateAdventure)
             }
         }
         .alert(item: $apiError) { error in
