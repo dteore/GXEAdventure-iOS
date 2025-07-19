@@ -5,9 +5,7 @@
 //  Created by YourName on 2023-10-27.
 //  Copyright © 2025 YourCompany. All rights reserved.
 //
-
 import SwiftUI
-
 // MARK: - Adventures Tab
 struct AdventuresTabView: View {
     @Binding var showSettings: Bool
@@ -47,7 +45,6 @@ struct AdventuresTabView: View {
                     promptText = "Take me on a \(type.replacingOccurrences(of: " (+", with: " (").replacingOccurrences(of: ")", with: "")))"
                     if let theme = selectedTheme { promptText += " through a \(theme) adventure." } else { promptText += " adventure." }
                 } else if let theme = selectedTheme, !isRandom { promptText = "Take me on a \(theme) adventure." }
-
                 let (adventure, _) = try await AdventureService.generateAdventure(
                     prompt: promptText,
                     playerProfileID: playerID,
@@ -62,12 +59,10 @@ struct AdventuresTabView: View {
                 print("AdventuresTabView: Assigning adventureTitle...")
                 self.adventureTitle = adventure.title
                 print("AdventuresTabView: adventureTitle assigned: \(self.adventureTitle)")
-
                 print("AdventuresTabView: Assigning adventureReward. Raw reward: \(adventure.reward)")
                 let numericRewardString = adventure.reward?.filter { "0123456789.".contains($0) } ?? "0"
                 self.adventureReward = numericRewardString.isEmpty ? "0" : numericRewardString // Ensure it's not empty
                 print("AdventuresTabView: adventureReward assigned: \(self.adventureReward)")
-
                 print("AdventuresTabView: Assigning adventureDetails...")
                 self.adventureDetails = adventure.nodes.isEmpty ? "No details available." : adventure.nodes.map { $0.content }.joined(separator: "\n\n")
                 print("AdventuresTabView: adventureDetails assigned: \(self.adventureDetails)")
@@ -96,7 +91,6 @@ struct AdventuresTabView: View {
         adventureTask?.cancel()
         isLoading = false
     }
-
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {

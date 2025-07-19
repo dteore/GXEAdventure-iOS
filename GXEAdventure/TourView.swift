@@ -23,7 +23,7 @@ public struct TourView: View {
     public var body: some View {
         NavigationView {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .center, spacing: 20) {
                     // MARK: - Header and Progress Bar
                 HStack {
                     Button(action: {
@@ -49,23 +49,18 @@ public struct TourView: View {
                 }
                 .padding(.horizontal, 25)
 
-                    
-
-                    
-
-                    
-
-                    VStack(spacing: 10) {
+VStack(spacing: 10) {
                         Text(adventure.title)
                         .font(.title.bold())
                         .foregroundStyle(.white)
                     Text(adventure.nodes[currentNodeIndex].content)
                         .font(.body)
                         .foregroundStyle(.white.opacity(0.8))
-                        .multilineTextAlignment(.center)
+                        .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .padding(30)
+                    .padding(40)
                     .background(Color.headingColor)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .padding(.horizontal)
@@ -76,8 +71,8 @@ public struct TourView: View {
                             currentNodeIndex += 1
                         }
                         .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
-                        .padding(.horizontal, 50)
-                        .padding(.top, 20)
+                        .frame(maxWidth: .infinity) // Make button fill width
+                        .padding(.horizontal, 25) // Match padding of the black box content
                     } else if adventure.nodes[currentNodeIndex].type.lowercased() == "ending" {
                         Button("Complete Tour") {
                             showSuccessView = true
