@@ -113,7 +113,7 @@ public struct ScavengerHuntView: View {
             locationManager.stopUpdating()
         }
         .fullScreenCover(isPresented: $showSuccessView) {
-            ScavengerHuntSuccessView(
+            SuccessView(
                 rewardAmount: 150,
                 onNewAdventure: {
                     showSuccessView = false

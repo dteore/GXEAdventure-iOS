@@ -9,10 +9,10 @@
 import SwiftUI
 
 struct ReadyView: View {
-    @Binding var adventureTitle: String
-    @Binding var adventureReward: String
-    @Binding var fullAdventureDetails: String
-    var onStartAdventure: () -> Void
+    let adventureTitle: String
+    let adventureReward: String
+    let fullAdventureDetails: String
+    
     var dismissAction: () -> Void
 
     @State private var showingDetailsAlert: Bool = false
@@ -79,10 +79,9 @@ struct ReadyView: View {
 struct ReadyView_Previews: PreviewProvider {
     static var previews: some View {
         ReadyView(
-            adventureTitle: .constant("A Whispering Woods Tour"),
-            adventureReward: .constant("XXXX N"),
-            fullAdventureDetails: .constant("Your full adventure details..."),
-            onStartAdventure: {}, // Provide an empty action for preview
+            adventureTitle: "A Whispering Woods Tour",
+            adventureReward: "XXXX N",
+            fullAdventureDetails: "Your full adventure details...",
             dismissAction: {}
         )
     }

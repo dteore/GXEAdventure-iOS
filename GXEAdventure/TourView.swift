@@ -11,6 +11,7 @@ import SwiftUI
 public struct TourView: View {
     let adventure: Adventure
     @Environment(\.dismiss) private var dismiss
+    @State private var showSuccessView = false // New state to control SuccessView presentation
 
     public var body: some View {
         NavigationView {
@@ -49,13 +50,35 @@ public struct TourView: View {
                         .foregroundStyle(Color.bodyTextColor)
                         .padding(.horizontal)
                         .padding(.bottom, 20)
+
+                    Button("Complete Tour") {
+                        showSuccessView = true
+                    }
+                    .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                    .padding(.horizontal, 50)
+                    .padding(.top, 20)
                 }
             }
             .background(Color.appBackground.ignoresSafeArea())
             .navigationBarHidden(true)
         }
+        .fullScreenCover(isPresented: $showSuccessView) {
+            SuccessView(
+                rewardAmount: Int(adventure.reward?.filter { "0123456789.".contains($0) }.doubleValue ?? 0),
+                onNewAdventure: {
+                    showSuccessView = false
+                    dismiss()
+                },
+                onKeepGoing: {
+                    showSuccessView = false
+                    dismiss()
+                }
+            )
+        }
     }
 }
+
+
 
 struct TourView_Previews: PreviewProvider {
     static var previews: some View {

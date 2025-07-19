@@ -56,9 +56,21 @@ struct AdventuresTabView: View {
                 )
                 
                 self.generatedAdventure = adventure // Assign the generated adventure
+                
+                print("AdventuresTabView: Decoded Adventure Object: \(adventure)") // Diagnostic print
+                
+                print("AdventuresTabView: Assigning adventureTitle...")
                 self.adventureTitle = adventure.title
-                self.adventureReward = adventure.reward
-                self.adventureDetails = adventure.nodes.map { $0.content }.joined(separator: "\n\n")
+                print("AdventuresTabView: adventureTitle assigned: \(self.adventureTitle)")
+
+                print("AdventuresTabView: Assigning adventureReward. Raw reward: \(adventure.reward)")
+                let numericRewardString = adventure.reward?.filter { "0123456789.".contains($0) } ?? "0"
+                self.adventureReward = numericRewardString.isEmpty ? "0" : numericRewardString // Ensure it's not empty
+                print("AdventuresTabView: adventureReward assigned: \(self.adventureReward)")
+
+                print("AdventuresTabView: Assigning adventureDetails...")
+                self.adventureDetails = adventure.nodes.isEmpty ? "No details available." : adventure.nodes.map { $0.content }.joined(separator: "\n\n")
+                print("AdventuresTabView: adventureDetails assigned: \(self.adventureDetails)")
                 
                 print("Generated Adventure Type: \(adventure.type)")
                 
@@ -67,6 +79,7 @@ struct AdventuresTabView: View {
                 print("AdventuresTabView: ReadyView should be shown.")
                 
             } catch {
+                print("AdventuresTabView: Error in generateAdventure: \(error)") // New diagnostic print
                 if !(error is CancellationError) {
                     if let appError = error as? AppError {
                         self.apiError = appError
@@ -122,27 +135,27 @@ struct AdventuresTabView: View {
             }
         )
         // Present the ReadyView
-        .fullScreenCover(isPresented: $showReadyView) {
+        .fullScreenCover(isPresented: $showReadyView, onDismiss: {
+            if let generated = generatedAdventure {
+                if generated.type.lowercased() == "scavenger-hunt" {
+                    self.showScavengerHunt = true
+                    print("AdventuresTabView: Launching ScavengerHuntView from ReadyView onDismiss.")
+                } else if generated.type.lowercased() == "tour" {
+                    self.showTourView = true
+                    print("AdventuresTabView: Launching TourView from ReadyView onDismiss.")
+                }
+            }
+        }) {
             if let adventure = generatedAdventure {
                 ReadyView(
-                    adventureTitle: $adventureTitle,
-                    adventureReward: $adventureReward,
-                    fullAdventureDetails: $adventureDetails,
-                    onStartAdventure: {
-                        // This closure is called when the START button in ReadyView is tapped
-                        if let generated = generatedAdventure {
-                            if generated.type.lowercased() == "scavenger-hunt" {
-                                self.showScavengerHunt = true
-                                print("AdventuresTabView: Launching ScavengerHuntView from ReadyView START button.")
-                            } else if generated.type.lowercased() == "tour" {
-                                self.showTourView = true
-                                print("AdventuresTabView: Launching TourView from ReadyView START button.")
-                            }
-                        }
-                        self.showReadyView = false // Dismiss ReadyView
-                    },
+                    adventureTitle: adventureTitle,
+                    adventureReward: adventureReward,
+                    fullAdventureDetails: adventureDetails,
                     dismissAction: { self.showReadyView = false }
                 )
+            } else {
+                // Fallback or error handling if generatedAdventure is unexpectedly nil
+                Text("Error: Adventure data not available.")
             }
         }
         // Present the ScavengerHuntView

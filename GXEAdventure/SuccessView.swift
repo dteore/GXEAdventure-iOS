@@ -1,5 +1,5 @@
 //
-//  ScavengerHuntSuccessView.swift
+//  SuccessView.swift
 //  GXEAdventure
 //
 //  Created by YourName on 2025-07-10.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ScavengerHuntSuccessView: View {
+struct SuccessView: View {
     // The reward amount to display.
     let rewardAmount: Int
     
@@ -87,8 +87,8 @@ struct ScavengerHuntSuccessView: View {
 
 // MARK: - Reusable Child Views & Styles
 private struct RatingButton: View {
-    let rating: ScavengerHuntSuccessView.Rating
-    @Binding var selection: ScavengerHuntSuccessView.Rating?
+    let rating: SuccessView.Rating
+    @Binding var selection: SuccessView.Rating?
     
     private var isSelected: Bool {
         selection == rating
@@ -142,9 +142,9 @@ private struct SecondaryActionButtonStyle: ButtonStyle {
 
 
 // MARK: - Preview
-struct ScavengerHuntSuccessView_Previews: PreviewProvider {
+struct SuccessView_Previews: PreviewProvider {
     static var previews: some View {
-        ScavengerHuntSuccessView(
+        SuccessView(
             rewardAmount: 150,
             onNewAdventure: { print("New Adventure Tapped") },
             onKeepGoing: { print("Keep Going Tapped") }

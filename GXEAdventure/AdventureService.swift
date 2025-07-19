@@ -9,6 +9,21 @@
 import Foundation
 
 // MARK: - Networking Models and Service
+
+public struct AdventureNodeMetadata: Codable {
+    let orderIndex: Int
+    let isAnswerNode: Bool
+    let type: String?
+    let metadata: String?
+}
+
+public struct AdventureNode: Codable, Identifiable {
+    public let id: String
+    let type: String
+    let content: String
+    let metadata: AdventureNodeMetadata
+}
+
 public struct Adventure: Codable {
     public let id: String
     let questId: String?
@@ -23,21 +38,11 @@ public struct Adventure: Codable {
     let createdAt: String
     let updatedAt: String
     let waypointCount: Int
-    let reward: String
+    let reward: String?
 }
 
-public struct AdventureNode: Codable, Identifiable {
-    public let id: String
-    let type: String
-    let content: String
-    let metadata: AdventureNodeMetadata
-}
-
-public struct AdventureNodeMetadata: Codable {
-    let orderIndex: Int
-    let isAnswerNode: Bool
-    let type: String?
-    let metadata: String?
+struct AdventureResponse: Decodable {
+    let adventure: Adventure
 }
 
 struct AdventureService {
@@ -100,8 +105,15 @@ struct AdventureService {
         // Log the raw data for debugging purposes to ensure it matches the 'Adventure' struct.
         print("Raw API Response: \(String(data: data, encoding: .utf8) ?? "Unable to convert data to string")")
 
-        let adventure = try JSONDecoder().decode(Adventure.self, from: data)
-        let details = adventure.nodes.map { $0.content }.joined(separator: "\n\n")
-        return (adventure, details)
+        do {
+            let responseData = try JSONDecoder().decode(AdventureResponse.self, from: data)
+            let adventure = responseData.adventure
+            print("Decoded Adventure Object: \(adventure)") // Diagnostic print
+            let details = adventure.nodes.map { $0.content }.joined(separator: "\n\n")
+            return (adventure, details)
+        } catch {
+            print("AdventureService: Decoding Error: \(error)") // New diagnostic print
+            throw AppError(message: "Failed to decode adventure data: \(error.localizedDescription)")
+        }
     }
 }
