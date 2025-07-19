@@ -49,27 +49,27 @@ public struct TourView: View {
                 }
                 .padding(.horizontal, 25)
 
-                    Text(adventure.title)
-                        .font(.largeTitle.bold())
-                        .foregroundStyle(Color.headingColor)
-                        .padding(.horizontal)
+                    
 
-                    Text("Reward: \(String(describing: adventure.reward))")
-                        .font(.title2.weight(.semibold))
-                        .foregroundStyle(Color.bodyTextColor)
-                        .padding(.horizontal)
+                    
 
-                    Text("Tour Details:")
-                        .font(.title3.bold())
-                        .foregroundStyle(Color.headingColor)
-                        .padding(.horizontal)
-                        .padding(.top, 20)
+                    
 
+                    VStack(spacing: 10) {
+                        Text(adventure.title)
+                        .font(.title.bold())
+                        .foregroundStyle(.white)
                     Text(adventure.nodes[currentNodeIndex].content)
                         .font(.body)
-                        .foregroundStyle(Color.bodyTextColor)
-                        .padding(.horizontal)
-                        .padding(.bottom, 20)
+                        .foregroundStyle(.white.opacity(0.8))
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(30)
+                    .background(Color.headingColor)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .padding(.horizontal)
+                    .padding(.top, 25)
 
                     if currentNodeIndex < adventure.nodes.count - 1 {
                         Button("Next") {
