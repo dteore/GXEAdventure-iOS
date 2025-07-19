@@ -5,18 +5,14 @@
 //  Created by YourName on 2025-07-10.
 //  Copyright © 2025 YourCompany. All rights reserved.
 //
-
 import SwiftUI
 import CoreLocation
-
 public struct ScavengerHuntView: View {
     let adventure: Adventure
     @EnvironmentObject var locationManager: LocationManager
     @Environment(\.dismiss) private var dismiss
     let generateNewAdventure: (Bool) -> Void
-
     private let targetLocation = CLLocation(latitude: 43.6498, longitude: -79.4197)
-
     @State private var hintState: HintState = .cold
     @State private var showLocationHint = false
     @State private var showSuccessView = false
@@ -24,16 +20,13 @@ public struct ScavengerHuntView: View {
     @State private var showAbandonAlert: Bool = false
     
     private var adventureProgress: Double = 0.33
-
     public init(adventure: Adventure, generateNewAdventure: @escaping (Bool) -> Void) {
         self.adventure = adventure
         self.generateNewAdventure = generateNewAdventure
     }
-
     public var body: some View {
         ZStack(alignment: .top) {
-            Color.appBackground.ignoresSafeArea()
-
+            Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0).ignoresSafeArea()
             VStack(spacing: 20) {
                 // MARK: - Header and Progress Bar
                 HStack {
@@ -50,7 +43,6 @@ public struct ScavengerHuntView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
-
                 VStack(alignment: .leading, spacing: 5) {
                     Text("ADVENTURE PROGRESS")
                         .font(.footnote)
@@ -59,7 +51,6 @@ public struct ScavengerHuntView: View {
                         .tint(.primaryAppColor)
                 }
                 .padding(.horizontal, 25)
-
                 // MARK: - Main Content Card
                 VStack(spacing: 30) {
                     VStack(spacing: 10) {
@@ -72,7 +63,6 @@ public struct ScavengerHuntView: View {
                             .foregroundStyle(.white.opacity(0.8))
                             .fixedSize(horizontal: false, vertical: true) // Allows text to wrap to multiple lines.
                     }
-
                     CompassView(
                         targetLocation: targetLocation,
                         hintState: $hintState
@@ -89,9 +79,7 @@ public struct ScavengerHuntView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .padding(.horizontal)
                 .padding(.top, 25)
-
                 Spacer()
-
                 // MARK: - Bottom Action Buttons
                 Button("Reveal Location") {
                     showLocationHint = true
@@ -101,7 +89,6 @@ public struct ScavengerHuntView: View {
                 .padding(.top, 15)
                 
                 Spacer()
-
                 .alert("Location Revealed", isPresented: $showLocationHint) {
                     Button("OK", role: .cancel) { }
                 } message: {
@@ -158,7 +145,6 @@ public struct ScavengerHuntView: View {
         
         let distanceInMeters = userLocation.distance(from: targetLocation)
         let checkInRadiusInMeters: Double = 15.24 // 50 feet
-
         if distanceInMeters <= checkInRadiusInMeters {
             showSuccessView = true
         } else {
@@ -166,7 +152,6 @@ public struct ScavengerHuntView: View {
         }
     }
 }
-
 // MARK: - Compass View Component
 private struct CompassView: View {
     @EnvironmentObject var locationManager: LocationManager
@@ -183,7 +168,6 @@ private struct CompassView: View {
         guard let userLocation = locationManager.userLocation else { return .greatestFiniteMagnitude }
         return userLocation.distance(from: targetLocation)
     }
-
     public var body: some View {
         ZStack {
             Image(systemName: "chevron.up")
@@ -193,7 +177,6 @@ private struct CompassView: View {
                 .rotationEffect(Angle(degrees: (bearing - locationManager.smoothedHeading)))
                 .animation(.spring(), value: locationManager.smoothedHeading)
                 .animation(.easeInOut, value: hintState)
-
             Circle()
                 .fill(hintState.color)
                 .frame(width: 180, height: 180)
@@ -227,7 +210,6 @@ private struct CompassView: View {
         }
     }
 }
-
 // MARK: - Helper Enum and Extensions (Scoped to this file)
 fileprivate enum HintState: String {
     case cold = "COLD"
@@ -242,7 +224,6 @@ fileprivate enum HintState: String {
         }
     }
 }
-
 fileprivate extension CLLocation {
     func bearing(to destination: CLLocation) -> Double {
         let lat1 = self.coordinate.latitude.toRadians()
@@ -256,13 +237,10 @@ fileprivate extension CLLocation {
         return (degrees + 360).truncatingRemainder(dividingBy: 360)
     }
 }
-
 fileprivate extension Double {
     func toRadians() -> Double { self * .pi / 180 }
     func toDegrees() -> Double { self * 180 / .pi }
 }
-
-
 // MARK: - Preview
 struct ScavengerHuntView_Previews: PreviewProvider {
     static var previews: some View {

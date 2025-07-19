@@ -1,31 +1,25 @@
 import SwiftUI
-
 struct AbandonAdventureConfirmationView: View {
     let onAbandon: () -> Void
     let onKeepPlaying: () -> Void
-
     var body: some View {
         ZStack {
             Color.black.opacity(0.75).ignoresSafeArea()
-
             VStack(spacing: 20) {
                 Text("WARNING!")
                     .font(.title.bold())
                     .foregroundColor(.red)
-
                 Text("You are about to abandon your current adventure. All progress will be removed.")
                     .font(.headline)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                     .foregroundStyle(Color.bodyTextColor)
-
                 VStack(spacing: 10) { // Use VStack for vertical stacking
                     Button("Abandon Adventure") {
                         onAbandon()
                     }
                     .buttonStyle(PressableButtonStyle(normalColor: .red, pressedColor: .red.opacity(0.8))) // Use consistent style
                     .frame(maxWidth: .infinity) // Make button fill width
-
                     Button("Keep Playing") {
                         onKeepPlaying()
                     }
@@ -42,7 +36,6 @@ struct AbandonAdventureConfirmationView: View {
         }
     }
 }
-
 struct AbandonAdventureConfirmationView_Previews: PreviewProvider {
     static var previews: some View {
         AbandonAdventureConfirmationView(

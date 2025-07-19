@@ -83,7 +83,8 @@ VStack(spacing: 10) {
                     }
                 }
             }
-            .background(Color.appBackground.ignoresSafeArea())
+            Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0)
+                .ignoresSafeArea()
             .navigationBarHidden(true)
         }
         .fullScreenCover(isPresented: $showSuccessView) {

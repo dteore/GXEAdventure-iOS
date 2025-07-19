@@ -5,9 +5,7 @@
 //  Created by YourName on 2025-07-10.
 //  Copyright © 2025 YourCompany. All rights reserved.
 //
-
 import SwiftUI
-
 struct SuccessView: View {
     // The reward amount to display.
     let rewardAmount: Int
@@ -24,7 +22,6 @@ struct SuccessView: View {
     enum Rating {
         case like, dislike
     }
-
     var body: some View {
         VStack(spacing: 30) {
             Spacer()
@@ -86,13 +83,25 @@ struct SuccessView: View {
             }
         }
         .padding()
-        .background(Color.appBackground.ignoresSafeArea())
+        .background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0).ignoresSafeArea())
         .sheet(isPresented: $showFeedbackSheet) {
             FeedbackView()
         }
+        .overlay(
+            HStack {
+                Button(action: { dismissParent() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                }
+                .padding(.leading, 10)
+                .padding(.top, 15)
+                Spacer()
+            }
+            , alignment: .topLeading
+        )
     }
 }
-
 // MARK: - Reusable Child Views & Styles
 private struct RatingButton: View {
     let rating: SuccessView.Rating
@@ -130,7 +139,6 @@ private struct RatingButton: View {
         }
     }
 }
-
 private struct SecondaryActionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -148,7 +156,6 @@ private struct SecondaryActionButtonStyle: ButtonStyle {
     }
 }
 
-
 // MARK: - Preview
 struct SuccessView_Previews: PreviewProvider {
     static var previews: some View {
@@ -162,4 +169,3 @@ struct SuccessView_Previews: PreviewProvider {
         )
     }
 }
-
