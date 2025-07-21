@@ -28,16 +28,9 @@ struct ContentView: View {
                 .tag(Tab.rewards)
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
-        .accentColor(.primaryAppColor)
+        .tint(.primaryAppColor)
     }
 }
-
-
-
-
-
-
-
 // MARK: - Preview
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
@@ -47,4 +40,3 @@ struct ContentView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
     }
 }
-

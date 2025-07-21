@@ -40,11 +40,22 @@ struct AdventuresTabView: View {
         adventureTask = Task {
             do {
                 let playerID = "test-player-id-\(UUID().uuidString.prefix(8))"
-                var promptText = "Take me on a random adventure."
-                if let type = selectedAdventureType, !isRandom {
-                    promptText = "Take me on a \(type.replacingOccurrences(of: " (+", with: " (").replacingOccurrences(of: ")", with: "")))"
-                    if let theme = selectedTheme { promptText += " through a \(theme) adventure." } else { promptText += " adventure." }
-                } else if let theme = selectedTheme, !isRandom { promptText = "Take me on a \(theme) adventure." }
+                var promptText: String
+                if isRandom {
+                    promptText = "Take me on a random adventure."
+                } else if let type = selectedAdventureType, let theme = selectedTheme {
+                    promptText = "Take me on a \(type) through a \(theme) adventure."
+                } else if let type = selectedAdventureType {
+                    promptText = "Take me on a \(type) adventure."
+                } else if let theme = selectedTheme {
+                    promptText = "Take me on a \(theme) adventure."
+                } else {
+                    promptText = "Take me on an adventure." // Fallback if no specific type or theme is selected and not random
+                }
+
+                if let userLocation = locationManager.userLocation {
+                    promptText += " using my current location: latitude \(userLocation.coordinate.latitude), longitude \(userLocation.coordinate.longitude)."
+                }
                 let (adventure, _) = try await AdventureService.generateAdventure(
                     prompt: promptText,
                     playerProfileID: playerID,

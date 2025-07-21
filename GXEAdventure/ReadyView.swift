@@ -19,7 +19,7 @@ struct ReadyView: View {
 
     var body: some View {
         ZStack {
-            Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0)
+            Color.appBackground
                 .ignoresSafeArea()
 
             VStack(spacing: 20) {

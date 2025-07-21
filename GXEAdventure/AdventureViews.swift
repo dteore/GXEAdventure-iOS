@@ -53,6 +53,7 @@ struct LocationRequiredSection: View {
             Text("To guide you on tours and verify scavenger hunt progress, we need your location. Please enable it in Settings.")
                 .font(.subheadline)
                 .foregroundStyle(Color.bodyTextColor)
+                .padding(.top, 5)
                 .padding(.bottom, 25)
             Button("ENABLE LOCATION") {
                 if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
@@ -73,11 +74,11 @@ struct StartAdventureSection: View {
                 .font(.subheadline)
                 .foregroundStyle(Color.bodyTextColor)
                 .padding(.bottom, 25)
-            Button("GENERATE ADVENTURE (100-250 N)") {
+            Button("GENERATE ADVENTURE") {
                 isLoading = true
                 generateAction()
             }.buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
-        }.padding(.horizontal).padding(.vertical, 25).background(Color.appBackground)
+        }.padding(.horizontal).padding(.vertical, 25).background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0))
     }
 }
 
@@ -87,7 +88,7 @@ struct CustomizationSection: View {
     @Binding var isLoading: Bool
     let isLocationAuthorized: Bool
     let generateAction: () -> Void
-    private let themes = ["History", "Culture", "Landmarks", "Nature", "[Timely]", "[Ghost Stories]"]
+    private let themes = ["History", "Culture", "Landmarks", "Nature", "Hidden Gems", "Ghost Stories"]
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Customization")
@@ -97,8 +98,8 @@ struct CustomizationSection: View {
                 .font(.headline)
                 .foregroundStyle(Color.headingColor)
             HStack(spacing: 15) {
-                TypeSelectionButton(title: "Tour (+25 N)", selection: $selectedAdventureType)
-                TypeSelectionButton(title: "Scavenger Hunt (+100 N)", selection: $selectedAdventureType)
+                TypeSelectionButton(title: "Tour", selection: $selectedAdventureType)
+                TypeSelectionButton(title: "Scavenger Hunt", selection: $selectedAdventureType)
                 Spacer()
             }
             Text("Theme")
@@ -107,7 +108,7 @@ struct CustomizationSection: View {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), spacing: 10)], spacing: 10) {
                 ForEach(themes, id: \.self) { theme in ThemeSelectionButton(title: theme, selection: $selectedTheme) }
             }
-            Button("GENERATE ADVENTURE (100-250 N)") {
+            Button("GENERATE ADVENTURE") {
                 isLoading = true
                 generateAction()
             }
@@ -116,7 +117,7 @@ struct CustomizationSection: View {
             .padding(.top, 50)
         }
         .padding()
-        .background(Color.white)
+        .background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0))
         .opacity(isLocationAuthorized ? 1.0 : 0.5)
     }
 }
