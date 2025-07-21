@@ -77,7 +77,7 @@ struct StartAdventureSection: View {
                 isLoading = true
                 generateAction()
             }.buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
-        }.padding(.horizontal).padding(.vertical, 25).background(Color.appBackground)
+        }.padding(.horizontal).padding(.vertical, 25).background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0))
     }
 }
 
@@ -116,7 +116,7 @@ struct CustomizationSection: View {
             .padding(.top, 50)
         }
         .padding()
-        .background(Color.white)
+        .background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0))
         .opacity(isLocationAuthorized ? 1.0 : 0.5)
     }
 }

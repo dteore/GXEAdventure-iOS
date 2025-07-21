@@ -25,40 +25,40 @@ public struct TourView: View {
             ScrollView {
                 VStack(alignment: .center, spacing: 20) {
                     // MARK: - Header and Progress Bar
-                HStack {
-                    Button(action: {
-                        showAbandonAlert = true
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.gray)
+                    HStack {
+                        Button(action: {
+                            showAbandonAlert = true
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.leading, 10)
+                        .padding(.top, 15)
+                        
+                        Spacer()
                     }
-                    .padding(.leading, 10)
-                    .padding(.top, 15)
-                    
-                    Spacer()
-                }
-                .padding(.horizontal)
+                    .padding(.horizontal)
 
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("TOUR PROGRESS")
-                        .font(.footnote)
-                        .foregroundStyle(Color.bodyTextColor)
-                    ProgressView(value: tourProgress)
-                        .tint(.primaryAppColor)
-                }
-                .padding(.horizontal, 25)
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("TOUR PROGRESS")
+                            .font(.footnote)
+                            .foregroundStyle(Color.bodyTextColor)
+                        ProgressView(value: tourProgress)
+                            .tint(.primaryAppColor)
+                    }
+                    .padding(.horizontal, 25)
 
-VStack(spacing: 10) {
+                    VStack(spacing: 10) {
                         Text(adventure.title)
-                        .font(.title.bold())
-                        .foregroundStyle(.white)
-                    Text(adventure.nodes[currentNodeIndex].content)
-                        .font(.body)
-                        .foregroundStyle(.white.opacity(0.8))
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.title.bold())
+                            .foregroundStyle(.white)
+                        Text(adventure.nodes[currentNodeIndex].content)
+                            .font(.body)
+                            .foregroundStyle(.white.opacity(0.8))
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(40)
                     .background(Color.headingColor)
@@ -83,8 +83,7 @@ VStack(spacing: 10) {
                     }
                 }
             }
-            Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0)
-                .ignoresSafeArea()
+            .background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0).ignoresSafeArea())
             .navigationBarHidden(true)
         }
         .fullScreenCover(isPresented: $showSuccessView) {
