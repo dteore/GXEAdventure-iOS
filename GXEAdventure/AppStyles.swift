@@ -8,21 +8,16 @@
 
 import SwiftUI
 
-
-
 // MARK: - Centralized Color Definitions
-/// This extension holds all the custom colors used throughout the app.
 extension Color {
     static let primaryAppColor = Color(red: 18/255, green: 165/255, blue: 144/255) // #12A590
-    static let pressedButtonColor = Color(red: 14/255, green: 125/255, blue: 110/255) // Darker shade for pressed state
+    static let pressedButtonColor = Color(red: 14/255, green: 125/255, blue: 110/255) // Darker shade
     static let appBackground = Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0) // #F1F1F1
     static let headingColor = Color(red: 26/255, green: 29/255, blue: 30/255) // #1A1D1E
     static let bodyTextColor = Color(red: 23/255, green: 23/255, blue: 23/255) // #171717
 }
 
 // MARK: - Custom Button Styles
-
-/// This is the style for primary action buttons (e.g., "GENERATE ADVENTURE").
 struct PressableButtonStyle: ButtonStyle {
     let normalColor: Color
     let pressedColor: Color
@@ -39,7 +34,6 @@ struct PressableButtonStyle: ButtonStyle {
     }
 }
 
-/// This is the style for selectable options like Type and Theme.
 struct SelectableButtonStyle: ButtonStyle {
     let isSelected: Bool
 
