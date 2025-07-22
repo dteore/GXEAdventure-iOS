@@ -113,7 +113,7 @@ struct FeedbackView: View {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
             .alert(item: $alertError) { error in
-                Alert(title: Text("Validation Error"), message: Text(error.message), dismissButton: .default(Text("OK")))
+                Alert(title: Text("Validation Error"), message: Text(error.message ?? "Unknown error"), dismissButton: .default(Text("OK")))
             }
         }
     }

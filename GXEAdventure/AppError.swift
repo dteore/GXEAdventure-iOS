@@ -9,6 +9,13 @@
 import Foundation
 
 struct AppError: Identifiable, Error {
-    let id = UUID()
-    let message: String
+    let id: UUID
+    let message: String?
+    let errorCode: Int
+
+    init(message: String? = nil, errorCode: Int = 1) {
+        self.id = UUID()
+        self.message = message
+        self.errorCode = errorCode
+    }
 }

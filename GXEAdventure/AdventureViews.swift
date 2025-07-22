@@ -17,7 +17,7 @@ struct HeaderSection: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .leading, spacing: 5) {
-                Text("Let's go on an adventure.")
+                Text("Adventures,Tours,and Scavenger Hunts--OH MY!")
                     .font(.system(size: 36, weight: .bold))
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(nil)
@@ -25,7 +25,7 @@ struct HeaderSection: View {
                     .foregroundStyle(Color.headingColor)
                     .padding(.top, 30)
 
-                Text("Uncover Trinity Bellwoods secrets! Adventures are 5-15m: scavenger hunts get you moving, while tours offer a relaxed pace.")
+                Text("Explore your city with 5-15 minute mini-adventures. Choose a fast-paced scavenger hunt or a relaxed local tour. Your next discovery is right around the corner.")
                     .font(.body)
                     .foregroundStyle(Color.bodyTextColor)
                     .padding(.top, 5)
@@ -66,15 +66,16 @@ struct StartAdventureSection: View {
     @Binding var isLoading: Bool
     let generateAction: () -> Void
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 5) {
             Text("Start your Adventure")
                 .font(.title.bold())
                 .foregroundStyle(Color.headingColor)
-            Text("Choose a random adventure, or customize yours with types and themes below.")
+            Text("Generate a random adventure, or customize yours with types and themes below.")
                 .font(.subheadline)
                 .foregroundStyle(Color.bodyTextColor)
+                .padding(.top, 5)
                 .padding(.bottom, 25)
-            Button("GENERATE ADVENTURE") {
+            Button("GENERATE RANDOM ADVENTURE") {
                 isLoading = true
                 generateAction()
             }.buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
@@ -88,12 +89,13 @@ struct CustomizationSection: View {
     @Binding var isLoading: Bool
     let isLocationAuthorized: Bool
     let generateAction: () -> Void
-    private let themes = ["History", "Culture", "Landmarks", "Nature", "Hidden Gems", "Ghost Stories"]
+    private let themes = ["History", "Culture", "Architecture", "Nature", "Queer History", "Ghost Stories"]
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Customization")
                 .font(.title.bold())
                 .foregroundStyle(Color.headingColor)
+                .padding(.top, 10)
             Text("Type")
                 .font(.headline)
                 .foregroundStyle(Color.headingColor)
@@ -105,19 +107,20 @@ struct CustomizationSection: View {
             Text("Theme")
                 .font(.headline)
                 .foregroundStyle(Color.headingColor)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), spacing: 10)], spacing: 10) {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
                 ForEach(themes, id: \.self) { theme in ThemeSelectionButton(title: theme, selection: $selectedTheme) }
             }
-            Button("GENERATE ADVENTURE") {
+            Button("GENERATE CUSTOM ADVENTURE") {
                 isLoading = true
                 generateAction()
             }
             .buttonStyle(PressableButtonStyle(normalColor: isLocationAuthorized ? .primaryAppColor : .gray.opacity(0.5), pressedColor: isLocationAuthorized ? .pressedButtonColor : .gray.opacity(0.7)))
             .disabled(!isLocationAuthorized)
-            .padding(.top, 50)
+            .padding(.top, 25)
+            .padding(.bottom, 35)
         }
         .padding()
-        .background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0))
+        .background(Color(red: 228/255, green: 228/255, blue: 228/255))
         .opacity(isLocationAuthorized ? 1.0 : 0.5)
     }
 }

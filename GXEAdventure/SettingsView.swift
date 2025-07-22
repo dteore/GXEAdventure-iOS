@@ -56,6 +56,7 @@ struct SettingsView: View {
                 }
             }
         }
+        .background(Color.appBackground.ignoresSafeArea())
     }
 }
 

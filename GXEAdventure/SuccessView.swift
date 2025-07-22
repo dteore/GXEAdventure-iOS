@@ -74,10 +74,8 @@ struct SuccessView: View {
                 .buttonStyle(SecondaryActionButtonStyle())
                 
                 Button("KEEP GOING") {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // Small delay to allow dismissal
-                        onKeepGoing(true)
-                        dismissParent()
-                    }
+                    dismissParent()
+                    onKeepGoing(true)
                 }
                 .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
             }

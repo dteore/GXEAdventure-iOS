@@ -9,11 +9,10 @@
 import SwiftUI
 
 struct ReadyView: View {
-    let adventureTitle: String
-    let adventureReward: String
-    let fullAdventureDetails: String
-    
-    var dismissAction: () -> Void
+    let adventure: Adventure
+    let generateNewAdventure: (Bool) -> Void
+    let onStartAdventure: (Adventure) -> Void
+    @Environment(\.dismiss) private var dismiss
 
     @State private var showingDetailsAlert: Bool = false
 
@@ -25,7 +24,7 @@ struct ReadyView: View {
             VStack(spacing: 20) {
                 HStack {
                     // FIX: Button moved to the leading edge (left) with consistent padding.
-                    Button(action: dismissAction) {
+                    Button(action: { dismiss() }) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
                             .foregroundColor(.gray)
@@ -48,19 +47,20 @@ struct ReadyView: View {
                     .font(.largeTitle.bold())
                     .foregroundStyle(Color.headingColor) // FIX: Explicit color
 
-                Text(adventureTitle)
+                Text(adventure.title)
                     .font(.title2.weight(.semibold))
                     .foregroundStyle(Color.bodyTextColor) // FIX: Explicit color
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
-                Text("Reward: \(adventureReward)")
+                Text("Reward: \(adventure.reward ?? "N/A")")
                     .font(.title3)
                     .foregroundStyle(Color.bodyTextColor) // FIX: Explicit color
                     .padding(.top, 5)
 
                 Button("START") {
-                    dismissAction()
+                    onStartAdventure(adventure)
+                    dismiss()
                 }
                 .buttonStyle(PressableButtonStyle(
                     normalColor: .primaryAppColor,
@@ -79,10 +79,24 @@ struct ReadyView: View {
 struct ReadyView_Previews: PreviewProvider {
     static var previews: some View {
         ReadyView(
-            adventureTitle: "A Whispering Woods Tour",
-            adventureReward: "XXXX N",
-            fullAdventureDetails: "Your full adventure details...",
-            dismissAction: {}
+            adventure: Adventure(
+                id: UUID().uuidString,
+                questId: nil,
+                title: "A Whispering Woods Tour",
+                location: "Forest",
+                type: "tour",
+                theme: "Nature",
+                playerId: "preview-player",
+                summary: "A tour through the whispering woods.",
+                status: "created",
+                nodes: [],
+                createdAt: "",
+                updatedAt: "",
+                waypointCount: 0,
+                reward: "100 N"
+            ),
+            generateNewAdventure: { _ in },
+            onStartAdventure: { _ in }
         )
     }
 }

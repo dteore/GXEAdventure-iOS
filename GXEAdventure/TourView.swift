@@ -51,8 +51,9 @@ public struct TourView: View {
 
                     VStack(spacing: 10) {
                         Text(adventure.title)
-                            .font(.title.bold())
-                            .foregroundStyle(.white)
+                        .font(.title.bold())
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         Text(adventure.nodes[currentNodeIndex].content)
                             .font(.body)
                             .foregroundStyle(.white.opacity(0.8))
@@ -66,26 +67,42 @@ public struct TourView: View {
                     .padding(.horizontal)
                     .padding(.top, 25)
 
-                    if currentNodeIndex < adventure.nodes.count - 1 {
-                        Button("Next") {
-                            currentNodeIndex += 1
+                    VStack(spacing: 10) {
+                        if currentNodeIndex < adventure.nodes.count - 1 {
+                            Button("NEXT") {
+                                currentNodeIndex += 1
+                            }
+                            .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                        } else if adventure.nodes[currentNodeIndex].type.lowercased() == "ending" {
+                            Button("COMPLETE TOUR") {
+                                showSuccessView = true
+                            }
+                            .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
                         }
-                        .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
-                        .frame(maxWidth: .infinity) // Make button fill width
-                        .padding(.horizontal, 25) // Match padding of the black box content
-                    } else if adventure.nodes[currentNodeIndex].type.lowercased() == "ending" {
-                        Button("Complete Tour") {
-                            showSuccessView = true
+
+                        if currentNodeIndex > 0 {
+                            Button(action: {
+                                currentNodeIndex -= 1
+                            }) {
+                                Text("BACK").font(.footnote.weight(.semibold)).frame(maxWidth: .infinity).padding(.vertical, 12)
+                            }
+                            .foregroundStyle(.gray)
+                            .background(.clear)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.5), lineWidth: 1))
                         }
-                        .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
-                        .padding(.horizontal, 50)
-                        .padding(.top, 20)
                     }
-                }
-            }
+                    .padding(.horizontal, 25) // Match padding of the black box content
+                    .padding(.top, 20) // Add padding to the top of the button stack
+                } // Closing brace for VStack(alignment: .center, spacing: 20)
+            } // Closing brace for ScrollView
             .background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0).ignoresSafeArea())
             .navigationBarHidden(true)
-        }
+        } // Closing brace for NavigationView
         .fullScreenCover(isPresented: $showSuccessView) {
             SuccessView(
                 rewardAmount: Int(adventure.reward?.filter { "0123456789.".contains($0) }.doubleValue ?? 0),
@@ -115,34 +132,9 @@ public struct TourView: View {
                 }
             }
         )
-    }
-}
+    } // Closing brace for public var body: some View
+} // Closing brace for public struct TourView: View
 
 
 
-struct TourView_Previews: PreviewProvider {
-    static var previews: some View {
-        TourView(adventure: Adventure(
-            id: UUID().uuidString,
-            questId: nil,
-            title: "Preview Tour: Historic Landmarks",
-            location: "City Center",
-            type: "tour",
-            theme: "History",
-            playerId: "preview-player",
-            summary: "A preview of a historical walking tour.",
-            status: "created",
-            nodes: [
-                AdventureNode(id: UUID().uuidString, type: "story", content: "Welcome to the heart of the city! Our tour begins at the iconic Town Hall.", metadata: AdventureNodeMetadata(orderIndex: 0, isAnswerNode: false, type: nil, metadata: nil)),
-                AdventureNode(id: UUID().uuidString, type: "discovery", content: "Next, we'll explore the grand architecture of the old library.", metadata: AdventureNodeMetadata(orderIndex: 1, isAnswerNode: false, type: nil, metadata: nil)),
-                AdventureNode(id: UUID().uuidString, type: "reflection", content: "Reflect on the city's past as we stand before the ancient city walls.", metadata: AdventureNodeMetadata(orderIndex: 2, isAnswerNode: false, type: nil, metadata: nil))
-            ],
-            createdAt: "",
-            updatedAt: "",
-            waypointCount: 0,
-            reward: "75 N"
-        ), generateNewAdventure: { _ in
-            print("Generate New Adventure from TourView Preview")
-        })
-    }
-}
+                        

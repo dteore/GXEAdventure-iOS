@@ -61,7 +61,7 @@ struct OnboardingView: View {
                         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.5), lineWidth: 1))
 
                     case 2:
-                        Button("ALLOW NOTIFICATIONS") { notificationManager.requestNotificationPermission() }
+                        Button("ENABLE NOTIFICATION") { notificationManager.requestNotificationPermission() }
                             .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
 
                         Button(action: nextStep) {

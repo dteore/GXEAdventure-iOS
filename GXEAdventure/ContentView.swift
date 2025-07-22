@@ -17,20 +17,28 @@ struct ContentView: View {
     enum Tab {
         case adventures, rewards
     }
+
     var body: some View {
         TabView(selection: $selectedTab) {
             AdventuresTabView(showSettings: $showSettings)
-                .tabItem { Label("Adventures", systemImage: "map.fill") }
+                .tabItem {
+                    Label("Adventures", systemImage: "map.fill")
+                }
                 .tag(Tab.adventures)
 
             RewardsTabView(showSettings: $showSettings)
-                .tabItem { Label("Rewards", systemImage: "star.fill") }
+                .tabItem {
+                    Label("Rewards", systemImage: "star.fill")
+                }
                 .tag(Tab.rewards)
         }
-        .sheet(isPresented: $showSettings) { SettingsView() }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+        }
         .tint(.primaryAppColor)
     }
 }
+
 // MARK: - Preview
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
@@ -40,3 +48,4 @@ struct ContentView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
     }
 }
+

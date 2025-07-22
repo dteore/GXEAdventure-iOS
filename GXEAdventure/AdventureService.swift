@@ -48,7 +48,7 @@ struct AdventureResponse: Decodable {
 struct AdventureService {
     static func generateAdventure(prompt: String, playerProfileID: String, type: String? = nil, origin: [String: Double]? = nil, distanceKm: Double? = nil, segments: Int? = nil, theme: String? = nil) async throws -> (adventure: Adventure, details: String) {
         guard let url = URL(string: "https://nvrse-ai.fly.dev/api/adventures") else {
-            throw AppError(message: "Invalid API URL.")
+            throw AppError(message: "Invalid API URL.", errorCode: 1001)
         }
         
         var requestBody: [String: Any] = [
@@ -88,17 +88,17 @@ struct AdventureService {
         }
 
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw AppError(message: "Invalid HTTP response.")
+            throw AppError(message: "Invalid HTTP response.", errorCode: 1002)
         }
 
         if !(200...299).contains(httpResponse.statusCode) {
             // Try to decode a specific error message from the server response.
             if let decodedError = try? JSONDecoder().decode(DecodableError.self, from: data) {
-                throw AppError(message: decodedError.message)
+                throw AppError(message: decodedError.message, errorCode: httpResponse.statusCode)
             } else {
                 // Fallback for unexpected error formats or non-JSON errors.
                 let errorBody = String(data: data, encoding: .utf8) ?? "Unknown server error."
-                throw AppError(message: "Server returned status \(httpResponse.statusCode):\n\(errorBody)")
+                throw AppError(message: "Server returned status \(httpResponse.statusCode):\n\(errorBody)", errorCode: httpResponse.statusCode)
             }
         }
         
@@ -113,7 +113,7 @@ struct AdventureService {
             return (adventure, details)
         } catch {
             print("AdventureService: Decoding Error: \(error)") // New diagnostic print
-            throw AppError(message: "Failed to decode adventure data: \(error.localizedDescription)")
+            throw AppError(message: "Failed to decode adventure data: \(error.localizedDescription)", errorCode: 1003)
         }
     }
 }
