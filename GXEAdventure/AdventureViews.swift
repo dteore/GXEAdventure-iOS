@@ -155,24 +155,36 @@ struct ThemeSelectionButton: View {
 }
 
 struct NotificationBannerView: View {
-    @State private var showBanner = true
+    @State private var showContent = true
     var body: some View {
-        if showBanner {
-            HStack(alignment: .center) {
-                Image(systemName: "bell.fill").font(.title).foregroundStyle(.white)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("DROP HAPPENING NOW!").font(.system(size: 16, weight: .bold))
-                    Text("A challenging adventure with an EXCLUSIVE reward. Don't miss out!").font(.system(size: 13)).lineLimit(2)
-                    Text("Start the adventure now!").font(.system(size: 12, weight: .semibold))
-                }.foregroundStyle(.white)
-                Spacer()
-                Button(action: { withAnimation { showBanner = false } }) {
-                    Image(systemName: "xmark.circle.fill").font(.title2).foregroundStyle(.white.opacity(0.7))
+        ZStack {
+            // This background will always be visible
+            (showContent ? LinearGradient(colors: [.primaryAppColor, .primaryAppColor], startPoint: .topLeading, endPoint: .bottomTrailing) : LinearGradient(colors: [Color.appBackground, Color.appBackground], startPoint: .topLeading, endPoint: .bottomTrailing))
+
+            if showContent {
+                HStack(alignment: .center) {
+                    Image(systemName: "bell.fill").font(.title).foregroundStyle(.white)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("DROP HAPPENING NOW!").font(.system(size: 16, weight: .bold))
+                        Text("A challenging adventure with an EXCLUSIVE reward. Don't miss out!").font(.system(size: 13)).lineLimit(2)
+                        Text("Start the adventure now!").font(.system(size: 12, weight: .semibold))
+                    }.foregroundStyle(.white)
+                    Spacer()
+                    Button(action: { withAnimation { showContent = false } }) {
+                        Image(systemName: "xmark.circle.fill").font(.title2).foregroundStyle(.white.opacity(0.7))
+                    }
+                }
+                .padding()
+                .onAppear {
+                    // Automatically dismiss content after a delay
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        withAnimation { showContent = false }
+                    }
                 }
             }
-            .padding()
-            .background(LinearGradient(colors: [.primaryAppColor, .primaryAppColor], startPoint: .topLeading, endPoint: .bottomTrailing))
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
+
 }
 

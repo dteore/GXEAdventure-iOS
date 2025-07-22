@@ -36,7 +36,7 @@ struct AdventuresTabView: View {
                 let playerID = "test-player-id-\(UUID().uuidString.prefix(8))"
                 var promptText: String
                 if let type = selectedAdventureType, !isRandom {
-                    promptText = "Take me on a \(type.replacingOccurrences(of: " (+", with: " (").replacingOccurrences(of: ")", with: "")))"
+                    promptText = "Take me on a \(type.replacingOccurrences(of: " (", with: " (").replacingOccurrences(of: ")", with: "")))"
                     if let theme = selectedTheme { promptText += " through a \(theme) adventure." } else { promptText += " adventure." }
                 } else if let theme = selectedTheme, !isRandom { promptText = "Take me on a \(theme) adventure." }
                 else { promptText = "Take me on a random adventure." }

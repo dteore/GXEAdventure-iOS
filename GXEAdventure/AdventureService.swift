@@ -63,7 +63,7 @@ struct AdventureService {
             requestBody["origin"] = origin
         }
         // Apply default values as per schema if not provided
-        requestBody["distancekm"] = distanceKm ?? 3.0
+        requestBody["distancekm"] = distanceKm ?? 1.0
         requestBody["segments"] = segments ?? 6
         
         if let theme = theme {
