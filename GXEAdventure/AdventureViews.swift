@@ -17,7 +17,7 @@ struct HeaderSection: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .leading, spacing: 5) {
-                Text("Adventures,Tours,and Scavenger Hunts--OH MY!")
+                Text("Adventures,Tours,and Scavenger Hunts!")
                     .font(.system(size: 36, weight: .bold))
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(nil)
