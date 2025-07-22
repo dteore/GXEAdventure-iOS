@@ -17,7 +17,7 @@ struct HeaderSection: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .leading, spacing: 5) {
-                Text("Adventures,Tours,and Scavenger Hunts!")
+                Text("Let's go on an Adventure!")
                     .font(.system(size: 36, weight: .bold))
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(nil)
@@ -70,7 +70,7 @@ struct StartAdventureSection: View {
             Text("Start your Adventure")
                 .font(.title.bold())
                 .foregroundStyle(Color.headingColor)
-            Text("Generate a random adventure, or customize yours with types and themes below.")
+            Text("Generate a random adventure, or customize yours with a type and a theme below.")
                 .font(.subheadline)
                 .foregroundStyle(Color.bodyTextColor)
                 .padding(.top, 5)
