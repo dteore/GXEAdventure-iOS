@@ -9,10 +9,11 @@ import SwiftUI
 struct SuccessView: View {
     // The reward amount to display.
     let rewardAmount: Int
+    let adventure: Adventure
     
     // Actions passed from the parent view.
     let onNewAdventure: () -> Void
-    let onKeepGoing: (Bool) -> Void
+    let onKeepGoing: (Bool, String?, String?) -> Void
     let dismissParent: () -> Void
     
     // State for the view's interactions.
@@ -75,7 +76,8 @@ struct SuccessView: View {
                 
                 Button("KEEP GOING") {
                     dismissParent()
-                    onKeepGoing(true)
+                    let shouldBeRandom = adventure.type.isEmpty && adventure.theme == nil
+                    onKeepGoing(shouldBeRandom, adventure.type, adventure.theme)
                 }
                 .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
             }
@@ -159,9 +161,25 @@ struct SuccessView_Previews: PreviewProvider {
     static var previews: some View {
         SuccessView(
             rewardAmount: 150,
+            adventure: Adventure(
+                id: UUID().uuidString,
+                questId: nil,
+                title: "Preview Adventure",
+                location: "Preview Location",
+                type: "tour",
+                theme: "History",
+                playerId: "preview-player",
+                summary: "Preview Summary",
+                status: "created",
+                nodes: [],
+                createdAt: "",
+                updatedAt: "",
+                waypointCount: 0,
+                reward: "100 N"
+            ),
             onNewAdventure: { print("New Adventure Tapped") },
-            onKeepGoing: { _ in
-                print("Keep Going Tapped in preview")
+            onKeepGoing: { isRandom, type, theme in
+                print("Keep Going Tapped in preview. isRandom: \(isRandom), type: \(type ?? "nil"), theme: \(theme ?? "nil")")
             },
             dismissParent: { print("Dismiss Parent from preview") }
         )

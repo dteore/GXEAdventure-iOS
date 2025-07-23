@@ -89,7 +89,7 @@ struct CustomizationSection: View {
     @Binding var isLoading: Bool
     let isLocationAuthorized: Bool
     let generateAction: () -> Void
-    private let themes = ["History", "Arts & Culture", "Architecture", "Nature", "Queer History", "Ghost Stories", "Celebreties", "Photography", "Wildlife", "Food"]
+    private let themes = ["Architecture", "Arts & Culture", "Celebrities", "Food", "Ghost Stories", "History", "Nature", "Photography", "Queer History","Wildlife"]
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Customization")

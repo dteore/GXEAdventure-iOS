@@ -29,17 +29,22 @@ struct AdventuresTabView: View {
         locationManager.authorizationStatus == .authorizedWhenInUse || locationManager.authorizationStatus == .authorizedAlways
     }
     
-    private func generateAdventure(isRandom: Bool) {
+    private func generateAdventure(isRandom: Bool, type: String? = nil, theme: String? = nil) {
         isLoading = true
         adventureTask = Task {
             do {
                 let playerID = "test-player-id-\(UUID().uuidString.prefix(8))"
                 var promptText: String
-                if let type = selectedAdventureType, !isRandom {
-                    promptText = "Take me on a \(type.replacingOccurrences(of: " (", with: " (").replacingOccurrences(of: ")", with: "")))"
-                    if let theme = selectedTheme { promptText += " through a \(theme) adventure." } else { promptText += " adventure." }
-                } else if let theme = selectedTheme, !isRandom { promptText = "Take me on a \(theme) adventure." }
-                else { promptText = "Take me on a random adventure." }
+                if isRandom {
+                    promptText = "Take me on a random adventure."
+                } else if let adventureType = type {
+                    promptText = "Take me on a \(adventureType.replacingOccurrences(of: " (", with: " (").replacingOccurrences(of: ")", with: "")))"
+                    if let adventureTheme = theme { promptText += " through a \(adventureTheme) adventure." } else { promptText += " adventure." }
+                } else if let adventureTheme = theme {
+                    promptText = "Take me on a \(adventureTheme) adventure."
+                } else {
+                    promptText = "Take me on a random adventure."
+                }
 
                 if let location = locationManager.userLocation {
                     promptText += " My current location is latitude \(location.coordinate.latitude) and longitude \(location.coordinate.longitude)."
@@ -48,8 +53,8 @@ struct AdventuresTabView: View {
                 let (adventureResponse, _) = try await AdventureService.generateAdventure(
                     prompt: promptText,
                     playerProfileID: playerID,
-                    type: isRandom ? nil : selectedAdventureType,
-                    theme: isRandom ? nil : selectedTheme
+                    type: isRandom ? nil : type,
+                    theme: isRandom ? nil : theme
                 )
                 
                 self.adventure = adventureResponse
@@ -85,7 +90,7 @@ struct AdventuresTabView: View {
                         })
                         
                         if isLocationAuthorized {
-                            StartAdventureSection(isLoading: $isLoading, generateAction: { generateAdventure(isRandom: true) })
+                            StartAdventureSection(isLoading: $isLoading, generateAction: { generateAdventure(isRandom: true, type: nil, theme: nil) })
                         } else {
                             LocationRequiredSection()
                         }
@@ -95,7 +100,7 @@ struct AdventuresTabView: View {
                             selectedTheme: $selectedTheme,
                             isLoading: $isLoading,
                             isLocationAuthorized: isLocationAuthorized,
-                            generateAction: { generateAdventure(isRandom: false) }
+                            generateAction: { generateAdventure(isRandom: false, type: selectedAdventureType, theme: selectedTheme) }
                         )
                     }
                 }
@@ -112,7 +117,9 @@ struct AdventuresTabView: View {
         )
         .fullScreenCover(isPresented: $isAdventureReady) {
             if let adventure = adventure {
-                ReadyView(adventure: adventure, generateNewAdventure: generateAdventure, onStartAdventure: { startedAdventure in
+                ReadyView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
+                    generateAdventure(isRandom: isRandom, type: type, theme: theme)
+                }, onStartAdventure: { startedAdventure in
                     isAdventureReady = false // Dismiss ReadyView
                     if startedAdventure.type.lowercased() == "tour" {
                         showTourView = true
@@ -124,16 +131,27 @@ struct AdventuresTabView: View {
         }
         .fullScreenCover(isPresented: $showScavengerHunt) {
             if let adventure = adventure {
-                ScavengerHuntView(adventure: adventure, generateNewAdventure: generateAdventure)
+                ScavengerHuntView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
+                    generateAdventure(isRandom: isRandom, type: type, theme: theme)
+                })
             }
         }
         .fullScreenCover(isPresented: $showTourView) {
             if let adventure = adventure {
-                TourView(adventure: adventure, generateNewAdventure: generateAdventure)
+                TourView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
+                    generateAdventure(isRandom: isRandom, type: type, theme: theme)
+                })
             }
         }
         .alert(item: $apiError) { errorWrapper in
-            Alert(title: Text("Error"), message: Text(errorWrapper.error.localizedDescription), dismissButton: .default(Text("OK")))
+            Alert(title: Text("Error"), message: Text(errorWrapper.error.localizedDescription), primaryButton: .default(Text("OK")) { apiError = nil }, secondaryButton: .default(Text("Retry")) { 
+                if let lastType = selectedAdventureType, let lastTheme = selectedTheme {
+                    generateAdventure(isRandom: false, type: lastType, theme: lastTheme)
+                } else {
+                    generateAdventure(isRandom: true, type: nil, theme: nil)
+                }
+                apiError = nil
+            })
         }
         .onAppear(perform: locationManager.fetchLocationStatus)
     }

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ReadyView: View {
     let adventure: Adventure
-    let generateNewAdventure: (Bool) -> Void
+    let generateNewAdventure: (Bool, String?, String?) -> Void
     let onStartAdventure: (Adventure) -> Void
     @Environment(\.dismiss) private var dismiss
 
@@ -95,7 +95,9 @@ struct ReadyView_Previews: PreviewProvider {
                 waypointCount: 0,
                 reward: "100 N"
             ),
-            generateNewAdventure: { _ in },
+            generateNewAdventure: { (isRandom: Bool, type: String?, theme: String?) in
+                print("Generate New Adventure from ReadyView Preview. isRandom: \(isRandom), type: \(type ?? "nil"), theme: \(theme ?? "nil")")
+            },
             onStartAdventure: { _ in }
         )
     }

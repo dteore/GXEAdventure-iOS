@@ -13,7 +13,7 @@ public struct TourView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showSuccessView = false // New state to control SuccessView presentation
     @State private var currentNodeIndex: Int = 0 // Track current node displayed
-    let generateNewAdventure: (Bool) -> Void
+    let generateNewAdventure: (Bool, String?, String?) -> Void
     @State private var showAbandonAlert: Bool = false
     private var tourProgress: Double {
         guard !adventure.nodes.isEmpty else { return 0.0 }
@@ -106,13 +106,14 @@ public struct TourView: View {
         .fullScreenCover(isPresented: $showSuccessView) {
             SuccessView(
                 rewardAmount: Int(adventure.reward?.filter { "0123456789.".contains($0) }.doubleValue ?? 0),
+                adventure: adventure,
                 onNewAdventure: {
                     showSuccessView = false
                     dismiss()
                 },
-                onKeepGoing: { isRandom in
+                onKeepGoing: { isRandom, type, theme in
                     showSuccessView = false
-                    generateNewAdventure(isRandom)
+                    generateNewAdventure(isRandom, type, theme)
                 },
                 dismissParent: { dismiss() }
             )

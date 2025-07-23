@@ -11,7 +11,7 @@ public struct ScavengerHuntView: View {
     let adventure: Adventure
     @EnvironmentObject var locationManager: LocationManager
     @Environment(\.dismiss) private var dismiss
-    let generateNewAdventure: (Bool) -> Void
+    let generateNewAdventure: (Bool, String?, String?) -> Void
     private let targetLocation = CLLocation(latitude: 43.6498, longitude: -79.4197)
     @State private var hintState: HintState = .cold
     @State private var showLocationHint = false
@@ -31,7 +31,7 @@ public struct ScavengerHuntView: View {
         
         return formatter.string(fromMeters: distanceInMeters)
     }
-    public init(adventure: Adventure, generateNewAdventure: @escaping (Bool) -> Void) {
+    public init(adventure: Adventure, generateNewAdventure: @escaping (Bool, String?, String?) -> Void) {
         self.adventure = adventure
         self.generateNewAdventure = generateNewAdventure
     }
@@ -124,12 +124,13 @@ public struct ScavengerHuntView: View {
         .fullScreenCover(isPresented: $showSuccessView) {
             SuccessView(
                 rewardAmount: 150,
+                adventure: adventure,
                 onNewAdventure: {
                     showSuccessView = false
                     dismiss()
                 },
-                onKeepGoing: { isRandom in
-                    generateNewAdventure(isRandom)
+                onKeepGoing: { isRandom, type, theme in
+                    generateNewAdventure(isRandom, type, theme)
                 },
                 dismissParent: { dismiss() }
             )
@@ -283,8 +284,8 @@ struct ScavengerHuntView_Previews: PreviewProvider {
             updatedAt: "",
             waypointCount: 0,
             reward: "100 N"
-        ), generateNewAdventure: { isRandom in
-            print("Generate New Adventure from ScavengerHuntView Preview. isRandom: \(isRandom)")
+        ), generateNewAdventure: { (isRandom: Bool, type: String?, theme: String?) in
+            print("Generate New Adventure from ScavengerHuntView Preview. isRandom: \(isRandom), type: \(type ?? "nil"), theme: \(theme ?? "nil")")
         })
             .environmentObject(LocationManager())
     }

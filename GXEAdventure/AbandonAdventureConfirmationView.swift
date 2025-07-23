@@ -15,12 +15,12 @@ struct AbandonAdventureConfirmationView: View {
                     .padding(.horizontal)
                     .foregroundStyle(Color.bodyTextColor)
                 VStack(spacing: 10) { // Use VStack for vertical stacking
-                    Button("Abandon Adventure") {
+                    Button("ABANDON ADVENTURE") {
                         onAbandon()
                     }
                     .buttonStyle(PressableButtonStyle(normalColor: .red, pressedColor: .red.opacity(0.8))) // Use consistent style
                     .frame(maxWidth: .infinity) // Make button fill width
-                    Button("Keep Playing") {
+                    Button("KEEP PLAYING") {
                         onKeepPlaying()
                     }
                     .buttonStyle(PressableButtonStyle(normalColor: .gray, pressedColor: .gray.opacity(0.8))) // Use consistent style
