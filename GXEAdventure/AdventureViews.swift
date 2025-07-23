@@ -187,4 +187,3 @@ struct NotificationBannerView: View {
     }
 
 }
-

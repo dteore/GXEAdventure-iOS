@@ -20,6 +20,17 @@ public struct ScavengerHuntView: View {
     @State private var showAbandonAlert: Bool = false
     
     private var adventureProgress: Double = 0.33
+    
+    private var distanceToTargetFormatted: String {
+        guard let userLocation = locationManager.userLocation else { return "Calculating..." }
+        let distanceInMeters = userLocation.distance(from: targetLocation)
+        
+        let formatter = LengthFormatter()
+        formatter.unitStyle = .short
+        formatter.numberFormatter.maximumFractionDigits = 0
+        
+        return formatter.string(fromMeters: distanceInMeters)
+    }
     public init(adventure: Adventure, generateNewAdventure: @escaping (Bool) -> Void) {
         self.adventure = adventure
         self.generateNewAdventure = generateNewAdventure
@@ -65,7 +76,8 @@ public struct ScavengerHuntView: View {
                     }
                     CompassView(
                         targetLocation: targetLocation,
-                        hintState: $hintState
+                        hintState: $hintState,
+                        distanceToTarget: .constant(0) // Placeholder, will be updated by CompassView
                     )
                     
                     Button("Check-in") {
@@ -73,6 +85,11 @@ public struct ScavengerHuntView: View {
                     }
                     .buttonStyle(PressableButtonStyle(normalColor: .gray, pressedColor: .primaryAppColor))
                     .padding(.horizontal, 80)
+
+                    Text("Distance: \(distanceToTargetFormatted)")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .padding(.bottom, 10) // 10px from the bottom of the black box
                 }
                 .padding(30)
                 .background(Color.headingColor)
@@ -152,18 +169,20 @@ public struct ScavengerHuntView: View {
         }
     }
 }
+
 // MARK: - Compass View Component
 private struct CompassView: View {
     @EnvironmentObject var locationManager: LocationManager
-    
+
     let targetLocation: CLLocation
     @Binding var hintState: HintState
-    
+    @Binding var distanceToTarget: CLLocationDistance // New binding for distance
+
     private var bearing: Double {
         guard let userLocation = locationManager.userLocation else { return 0 }
         return userLocation.bearing(to: targetLocation)
     }
-    
+
     private var distance: CLLocationDistance {
         guard let userLocation = locationManager.userLocation else { return .greatestFiniteMagnitude }
         return userLocation.distance(from: targetLocation)
@@ -191,14 +210,15 @@ private struct CompassView: View {
         .onAppear(perform: updateHintState)
         .onChange(of: distance) { _, _ in
             updateHintState()
+            distanceToTarget = distance // Update the binding
         }
     }
-    
+
     private func updateHintState() {
         withAnimation(.easeInOut) {
             let hotDistance: CLLocationDistance = 15.24 // 50 feet
             let warmDistance: CLLocationDistance = 30.48 // 100 feet
-            
+
             switch distance {
             case ...hotDistance:
                 hintState = .hot
@@ -215,7 +235,7 @@ fileprivate enum HintState: String {
     case cold = "COLD"
     case warm = "WARM"
     case hot = "HOT"
-    
+
     var color: Color {
         switch self {
         case .cold: return .blue
@@ -241,6 +261,7 @@ fileprivate extension Double {
     func toRadians() -> Double { self * .pi / 180 }
     func toDegrees() -> Double { self * 180 / .pi }
 }
+
 // MARK: - Preview
 struct ScavengerHuntView_Previews: PreviewProvider {
     static var previews: some View {
