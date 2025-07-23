@@ -17,7 +17,7 @@ struct HistoryCardView: View {
     let onToggleFavorite: (UUID) -> Void
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
+        ZStack(alignment: .bottomTrailing) {
             Button(action: { onCardTapped(savedAdventure.adventure) }) {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(alignment: .top) {
@@ -94,7 +94,8 @@ struct HistoryCardView: View {
                     .foregroundColor(.gray)
                     .padding(5)
             }
-            .offset(x: 10, y: -10) // Adjust position to be outside the card slightly
+            .padding(.trailing, 15)
+            .padding(.bottom, 15)
         }
     }
 }
