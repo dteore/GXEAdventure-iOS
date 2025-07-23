@@ -11,7 +11,7 @@ import CoreLocation
 
 struct OnboardingView: View {
     @Binding var hasCompletedOnboarding: Bool
-    @EnvironmentObject var locationManager: LocationManager
+    @EnvironmentObject private var adventureViewModel: AdventureViewModel
     @EnvironmentObject var notificationManager: NotificationManager
     @State private var onboardingStep: Int = 0
 
@@ -49,7 +49,7 @@ struct OnboardingView: View {
                 VStack(spacing: 15) {
                     switch onboardingStep {
                     case 1:
-                        Button("ENABLE LOCATION") { locationManager.requestLocationPermission() }
+                        Button("ENABLE LOCATION") { adventureViewModel.locationManager.requestLocationPermission() }
                             .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
                         
                         Button(action: nextStep) {
@@ -86,7 +86,7 @@ struct OnboardingView: View {
             .padding(.bottom)
         }
         .background(Color.appBackground.ignoresSafeArea())
-        .onChange(of: locationManager.authorizationStatus) { _, newStatus in
+        .onChange(of: adventureViewModel.locationManager.authorizationStatus) { _, newStatus in
             if onboardingStep == 1 && newStatus != .notDetermined { nextStep() }
         }
         .onChange(of: notificationManager.authorizationStatus) { _, newStatus in
@@ -142,7 +142,7 @@ private struct OnboardingPageData: Identifiable {
 struct OnboardingView_Previews: PreviewProvider {
     static var previews: some View {
         OnboardingView(hasCompletedOnboarding: .constant(false))
-            .environmentObject(LocationManager())
+            .environmentObject(AdventureViewModel(locationManager: LocationManager()))
             .environmentObject(NotificationManager())
     }
 }

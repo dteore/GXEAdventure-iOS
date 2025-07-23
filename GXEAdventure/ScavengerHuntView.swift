@@ -9,7 +9,7 @@ import SwiftUI
 import CoreLocation
 public struct ScavengerHuntView: View {
     let adventure: Adventure
-    @EnvironmentObject var locationManager: LocationManager
+    @EnvironmentObject private var adventureViewModel: AdventureViewModel
     @Environment(\.dismiss) private var dismiss
     let generateNewAdventure: (Bool, String?, String?) -> Void
     private let targetLocation = CLLocation(latitude: 43.6498, longitude: -79.4197)
@@ -22,7 +22,7 @@ public struct ScavengerHuntView: View {
     private var adventureProgress: Double = 0.33
     
     private var distanceToTargetFormatted: String {
-        guard let userLocation = locationManager.userLocation else { return "Calculating..." }
+        guard let userLocation = adventureViewModel.locationManager.userLocation else { return "Calculating..." }
         let distanceInMeters = userLocation.distance(from: targetLocation)
         
         let formatter = LengthFormatter()
@@ -116,10 +116,10 @@ public struct ScavengerHuntView: View {
         }
         .preferredColorScheme(.light)
         .onAppear {
-            locationManager.startUpdating()
+            adventureViewModel.locationManager.startUpdating()
         }
         .onDisappear {
-            locationManager.stopUpdating()
+            adventureViewModel.locationManager.stopUpdating()
         }
         .fullScreenCover(isPresented: $showSuccessView) {
             SuccessView(
@@ -156,7 +156,7 @@ public struct ScavengerHuntView: View {
     }
     
     private func handleCheckIn() {
-        guard let userLocation = locationManager.userLocation else {
+        guard let userLocation = adventureViewModel.locationManager.userLocation else {
             print("User location not available for check-in.")
             return
         }
@@ -173,19 +173,19 @@ public struct ScavengerHuntView: View {
 
 // MARK: - Compass View Component
 private struct CompassView: View {
-    @EnvironmentObject var locationManager: LocationManager
+    @EnvironmentObject var adventureViewModel: AdventureViewModel
 
     let targetLocation: CLLocation
     @Binding var hintState: HintState
     @Binding var distanceToTarget: CLLocationDistance // New binding for distance
 
     private var bearing: Double {
-        guard let userLocation = locationManager.userLocation else { return 0 }
+        guard let userLocation = adventureViewModel.locationManager.userLocation else { return 0 }
         return userLocation.bearing(to: targetLocation)
     }
 
     private var distance: CLLocationDistance {
-        guard let userLocation = locationManager.userLocation else { return .greatestFiniteMagnitude }
+        guard let userLocation = adventureViewModel.locationManager.userLocation else { return .greatestFiniteMagnitude }
         return userLocation.distance(from: targetLocation)
     }
     public var body: some View {
@@ -194,8 +194,8 @@ private struct CompassView: View {
                 .font(.system(size: 50, weight: .bold))
                 .foregroundColor(hintState.color)
                 .offset(y: -110)
-                .rotationEffect(Angle(degrees: (bearing - locationManager.smoothedHeading)))
-                .animation(.spring(), value: locationManager.smoothedHeading)
+                .rotationEffect(Angle(degrees: (bearing - adventureViewModel.locationManager.smoothedHeading)))
+                .animation(.spring(), value: adventureViewModel.locationManager.smoothedHeading)
                 .animation(.easeInOut, value: hintState)
             Circle()
                 .fill(hintState.color)
@@ -287,6 +287,6 @@ struct ScavengerHuntView_Previews: PreviewProvider {
         ), generateNewAdventure: { (isRandom: Bool, type: String?, theme: String?) in
             print("Generate New Adventure from ScavengerHuntView Preview. isRandom: \(isRandom), type: \(type ?? "nil"), theme: \(theme ?? "nil")")
         })
-            .environmentObject(LocationManager())
+            .environmentObject(AdventureViewModel(locationManager: LocationManager()))
     }
 }

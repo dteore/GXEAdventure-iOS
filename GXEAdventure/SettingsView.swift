@@ -63,7 +63,7 @@ struct SettingsView: View {
 // MARK: - Child Views
 private struct PermissionsSection: View {
     @EnvironmentObject var notificationManager: NotificationManager
-    @EnvironmentObject var locationManager: LocationManager
+    @EnvironmentObject private var adventureViewModel: AdventureViewModel
     
     var body: some View {
         Section(header: Text("Device Permissions")) {
@@ -71,7 +71,7 @@ private struct PermissionsSection: View {
                 title: "Location Services",
                 iconName: "location.fill",
                 iconColor: .blue,
-                status: locationStatusString(for: locationManager.authorizationStatus)
+                status: locationStatusString(for: adventureViewModel.locationManager.authorizationStatus)
             )
             
             PermissionRow(
@@ -92,11 +92,11 @@ private struct PermissionsSection: View {
         // Fetch the latest permission statuses when the view appears or returns to the foreground.
         .onAppear {
             notificationManager.fetchNotificationStatus()
-            locationManager.fetchLocationStatus()
+            adventureViewModel.locationManager.fetchLocationStatus()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             notificationManager.fetchNotificationStatus()
-            locationManager.fetchLocationStatus()
+            adventureViewModel.locationManager.fetchLocationStatus()
         }
     }
     
@@ -168,7 +168,6 @@ struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()
             .environmentObject(NotificationManager())
-            .environmentObject(LocationManager())
+            .environmentObject(AdventureViewModel(locationManager: LocationManager()))
     }
 }
-

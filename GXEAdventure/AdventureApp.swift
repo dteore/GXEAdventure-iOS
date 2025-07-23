@@ -10,14 +10,26 @@ import SwiftUI
 
 @main
 struct AdventureApp: App {
-    @StateObject private var notificationManager = NotificationManager()
-    @StateObject private var locationManager = LocationManager()
+    @StateObject private var notificationManager: NotificationManager
+    @StateObject private var locationManager: LocationManager
+    @StateObject private var savedAdventuresManager: SavedAdventuresManager
+    @StateObject private var adventureViewModel: AdventureViewModel
+
+    init() {
+        let newLocationManager = LocationManager()
+        _notificationManager = StateObject(wrappedValue: NotificationManager())
+        _locationManager = StateObject(wrappedValue: newLocationManager)
+        _savedAdventuresManager = StateObject(wrappedValue: SavedAdventuresManager())
+        _adventureViewModel = StateObject(wrappedValue: AdventureViewModel(locationManager: newLocationManager))
+    }
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(notificationManager)
                 .environmentObject(locationManager)
+                .environmentObject(savedAdventuresManager)
+                .environmentObject(adventureViewModel)
         }
     }
 }
@@ -47,4 +59,3 @@ private struct RootView: View {
 private extension Color {
     static let rootViewBackgroundColor = Color(red: 242/255, green: 242/255, blue: 242/255)
 }
-

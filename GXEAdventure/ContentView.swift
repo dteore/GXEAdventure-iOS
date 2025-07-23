@@ -11,26 +11,27 @@ import CoreLocation
 
 // MARK: - Main Content View
 struct ContentView: View {
-    @State private var selectedTab: Tab = .adventures
+    @EnvironmentObject private var adventureViewModel: AdventureViewModel
+    
     @State private var showSettings: Bool = false
     
     enum Tab {
-        case adventures, rewards
+        case adventures, history
     }
 
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView {
             AdventuresTabView(showSettings: $showSettings)
                 .tabItem {
                     Label("Adventures", systemImage: "map.fill")
                 }
                 .tag(Tab.adventures)
 
-            RewardsTabView(showSettings: $showSettings)
+            HistoryTabView(showSettings: $showSettings)
                 .tabItem {
-                    Label("Rewards", systemImage: "star.fill")
+                    Label("History", systemImage: "book.closed.fill")
                 }
-                .tag(Tab.rewards)
+                .tag(Tab.history)
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
@@ -45,6 +46,8 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
             .environmentObject(LocationManager())
             .environmentObject(NotificationManager())
+            .environmentObject(AdventureViewModel(locationManager: LocationManager()))
+            .environmentObject(SavedAdventuresManager())
             .preferredColorScheme(.dark)
     }
 }

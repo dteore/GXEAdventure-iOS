@@ -11,6 +11,8 @@ struct SuccessView: View {
     let rewardAmount: Int
     let adventure: Adventure
     
+    @EnvironmentObject var savedAdventuresManager: SavedAdventuresManager
+    
     // Actions passed from the parent view.
     let onNewAdventure: () -> Void
     let onKeepGoing: (Bool, String?, String?) -> Void
@@ -100,6 +102,9 @@ struct SuccessView: View {
             }
             , alignment: .topLeading
         )
+        .onAppear {
+            savedAdventuresManager.saveAdventure(adventure)
+        }
     }
 }
 // MARK: - Reusable Child Views & Styles
@@ -183,5 +188,6 @@ struct SuccessView_Previews: PreviewProvider {
             },
             dismissParent: { print("Dismiss Parent from preview") }
         )
+        .environmentObject(SavedAdventuresManager())
     }
 }

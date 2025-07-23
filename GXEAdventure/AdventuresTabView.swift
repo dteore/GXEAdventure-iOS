@@ -11,69 +11,13 @@ import SwiftUI
 // MARK: - Adventures Tab
 struct AdventuresTabView: View {
     @Binding var showSettings: Bool
-    @State private var isLoading: Bool = false
-    @State private var isAdventureReady: Bool = false
-    @State private var adventure: Adventure?
-    
-    @State private var apiError: ErrorWrapper? = nil
-    @State private var adventureTask: Task<Void, Error>?
     @State private var selectedAdventureType: String? = nil
     @State private var selectedTheme: String?
     
-    @State private var showScavengerHunt: Bool = false
-    @State private var showTourView: Bool = false
-    
-    @EnvironmentObject private var locationManager: LocationManager
+    @EnvironmentObject private var adventureViewModel: AdventureViewModel
     
     private var isLocationAuthorized: Bool {
-        locationManager.authorizationStatus == .authorizedWhenInUse || locationManager.authorizationStatus == .authorizedAlways
-    }
-    
-    private func generateAdventure(isRandom: Bool, type: String? = nil, theme: String? = nil) {
-        isLoading = true
-        adventureTask = Task {
-            do {
-                let playerID = "test-player-id-\(UUID().uuidString.prefix(8))"
-                var promptText: String
-                if isRandom {
-                    promptText = "Take me on a random adventure."
-                } else if let adventureType = type {
-                    promptText = "Take me on a \(adventureType.replacingOccurrences(of: " (", with: " (").replacingOccurrences(of: ")", with: "")))"
-                    if let adventureTheme = theme { promptText += " through a \(adventureTheme) adventure." } else { promptText += " adventure." }
-                } else if let adventureTheme = theme {
-                    promptText = "Take me on a \(adventureTheme) adventure."
-                } else {
-                    promptText = "Take me on a random adventure."
-                }
-
-                if let location = locationManager.userLocation {
-                    promptText += " My current location is latitude \(location.coordinate.latitude) and longitude \(location.coordinate.longitude)."
-                }
-
-                let (adventureResponse, _) = try await AdventureService.generateAdventure(
-                    prompt: promptText,
-                    playerProfileID: playerID,
-                    type: isRandom ? nil : type,
-                    theme: isRandom ? nil : theme
-                )
-                
-                self.adventure = adventureResponse
-                self.isAdventureReady = true
-                
-            } catch {
-                // Ignore cancellation errors, which are expected when the user dismisses the loading view.
-                let isCancellation = error is CancellationError || (error as? URLError)?.code == .cancelled
-                if !isCancellation {
-                    self.apiError = ErrorWrapper(error: error)
-                }
-            }
-            self.isLoading = false
-        }
-    }
-    
-    private func cancelAdventure() {
-        adventureTask?.cancel()
-        isLoading = false
+        adventureViewModel.locationManager.authorizationStatus == .authorizedWhenInUse || adventureViewModel.locationManager.authorizationStatus == .authorizedAlways
     }
 
     var body: some View {
@@ -85,12 +29,12 @@ struct AdventuresTabView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        HeaderSection(showSettings: $showSettings, showScavengerHunt: $showScavengerHunt, generateAction: {
-                            showScavengerHunt = true
+                        HeaderSection(showSettings: $showSettings, showScavengerHunt: $adventureViewModel.showScavengerHunt, generateAction: {
+                            adventureViewModel.showScavengerHunt = true
                         })
                         
                         if isLocationAuthorized {
-                            StartAdventureSection(isLoading: $isLoading, generateAction: { generateAdventure(isRandom: true, type: nil, theme: nil) })
+                            StartAdventureSection(isLoading: $adventureViewModel.isLoading, generateAction: { adventureViewModel.generateAdventure(isRandom: true, type: nil, theme: nil) })
                         } else {
                             LocationRequiredSection()
                         }
@@ -98,9 +42,9 @@ struct AdventuresTabView: View {
                         CustomizationSection(
                             selectedAdventureType: $selectedAdventureType,
                             selectedTheme: $selectedTheme,
-                            isLoading: $isLoading,
+                            isLoading: $adventureViewModel.isLoading,
                             isLocationAuthorized: isLocationAuthorized,
-                            generateAction: { generateAdventure(isRandom: false, type: selectedAdventureType, theme: selectedTheme) }
+                            generateAction: { adventureViewModel.generateAdventure(isRandom: false, type: selectedAdventureType, theme: selectedTheme) }
                         )
                     }
                 }
@@ -110,50 +54,59 @@ struct AdventuresTabView: View {
         }
         .overlay(
             Group {
-                if isLoading {
-                    LoadingView(isLoading: $isLoading, cancelAction: cancelAdventure)
+                if adventureViewModel.isLoading {
+                    LoadingView(isLoading: $adventureViewModel.isLoading, cancelAction: adventureViewModel.cancelAdventure)
                 }
             }
         )
-        .fullScreenCover(isPresented: $isAdventureReady) {
-            if let adventure = adventure {
+        .fullScreenCover(isPresented: $adventureViewModel.isAdventureReady) {
+            if let adventure = adventureViewModel.adventure {
                 ReadyView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
-                    generateAdventure(isRandom: isRandom, type: type, theme: theme)
+                    adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
                 }, onStartAdventure: { startedAdventure in
-                    isAdventureReady = false // Dismiss ReadyView
+                    adventureViewModel.isAdventureReady = false // Dismiss ReadyView
                     if startedAdventure.type.lowercased() == "tour" {
-                        showTourView = true
+                        adventureViewModel.showTourView = true
                     } else {
-                        showScavengerHunt = true
+                        adventureViewModel.showScavengerHunt = true
                     }
                 })
             }
         }
-        .fullScreenCover(isPresented: $showScavengerHunt) {
-            if let adventure = adventure {
+        .fullScreenCover(isPresented: $adventureViewModel.showScavengerHunt) {
+            if let adventure = adventureViewModel.adventure {
                 ScavengerHuntView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
-                    generateAdventure(isRandom: isRandom, type: type, theme: theme)
+                    adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
                 })
             }
         }
-        .fullScreenCover(isPresented: $showTourView) {
-            if let adventure = adventure {
+        .fullScreenCover(isPresented: $adventureViewModel.showTourView) {
+            if let adventure = adventureViewModel.adventure {
                 TourView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
-                    generateAdventure(isRandom: isRandom, type: type, theme: theme)
+                    adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
                 })
             }
         }
-        .alert(item: $apiError) { errorWrapper in
-            Alert(title: Text("Error"), message: Text(errorWrapper.error.localizedDescription), primaryButton: .default(Text("OK")) { apiError = nil }, secondaryButton: .default(Text("Retry")) { 
+        .alert(item: $adventureViewModel.apiError) { errorWrapper in
+            Alert(title: Text("Error"), message: Text(errorWrapper.error.localizedDescription), primaryButton: .default(Text("OK")) { adventureViewModel.apiError = nil }, secondaryButton: .default(Text("Retry")) { 
                 if let lastType = selectedAdventureType, let lastTheme = selectedTheme {
-                    generateAdventure(isRandom: false, type: lastType, theme: lastTheme)
+                    adventureViewModel.generateAdventure(isRandom: false, type: lastType, theme: lastTheme)
                 } else {
-                    generateAdventure(isRandom: true, type: nil, theme: nil)
+                    adventureViewModel.generateAdventure(isRandom: true, type: nil, theme: nil)
                 }
-                apiError = nil
+                adventureViewModel.apiError = nil
             })
         }
-        .onAppear(perform: locationManager.fetchLocationStatus)
+        .onAppear(perform: adventureViewModel.locationManager.fetchLocationStatus)
     }
 }
 
+struct AdventuresTabView_Previews: PreviewProvider {
+    static var previews: some View {
+        AdventuresTabView(showSettings: .constant(false))
+            .environmentObject(LocationManager())
+            .environmentObject(NotificationManager())
+            .environmentObject(SavedAdventuresManager())
+            .environmentObject(AdventureViewModel(locationManager: LocationManager()))
+    }
+}
