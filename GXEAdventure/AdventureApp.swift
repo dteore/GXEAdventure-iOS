@@ -21,7 +21,10 @@ struct AdventureApp: App {
         _locationManager = StateObject(wrappedValue: newLocationManager)
         _savedAdventuresManager = StateObject(wrappedValue: SavedAdventuresManager())
         _adventureViewModel = StateObject(wrappedValue: AdventureViewModel(locationManager: newLocationManager))
-        UITabBar.appearance().unselectedItemTintColor = UIColor(Color.bodyTextColor)
+        UITabBar.appearance().unselectedItemTintColor = UIColor(Color.gray.opacity(0.6))
+        UINavigationBar.appearance().barTintColor = UIColor.white
+        UINavigationBar.appearance().backgroundColor = UIColor.white
+        UINavigationBar.appearance().isTranslucent = false
     }
 
     var body: some Scene {

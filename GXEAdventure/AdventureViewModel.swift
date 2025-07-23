@@ -15,8 +15,8 @@ class AdventureViewModel: ObservableObject {
     @Published var isAdventureReady: Bool = false
     @Published var adventure: Adventure?
     @Published var apiError: ErrorWrapper? = nil
-    @Published var showScavengerHunt: Bool = false
-    @Published var showTourView: Bool = false
+    @Published var presentedAdventure: Adventure?
+    @Published var isPresentingAdventure: Bool = false
 
     private var adventureTask: Task<Void, Error>?
     let locationManager: LocationManager
@@ -44,14 +44,16 @@ class AdventureViewModel: ObservableObject {
                     promptText = "Take me on a random adventure."
                 }
 
+                var origin: [String: Double]? = nil
                 if let location = currentLocation {
-                    promptText += " My current location is latitude \(location.coordinate.latitude) and longitude \(location.coordinate.longitude)."
+                    origin = ["lat": location.coordinate.latitude, "lng": location.coordinate.longitude]
                 }
 
                 let (adventureResponse, _) = try await AdventureService.generateAdventure(
                     prompt: promptText,
                     playerProfileID: playerID,
                     type: isRandom ? nil : type,
+                    origin: origin,
                     theme: isRandom ? nil : theme
                 )
                 

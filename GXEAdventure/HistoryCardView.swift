@@ -16,6 +16,8 @@ struct HistoryCardView: View {
     let onDelete: (UUID) -> Void
     let onToggleFavorite: (UUID) -> Void
 
+    @State private var showDeleteConfirmation: Bool = false
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             Button(action: { onCardTapped(savedAdventure.adventure) }) {
@@ -26,6 +28,7 @@ struct HistoryCardView: View {
                             .foregroundStyle(Color.headingColor)
                             .lineLimit(2)
                             .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.leading)
                         Spacer()
                         
                         // Favorite Button
@@ -40,12 +43,13 @@ struct HistoryCardView: View {
 
                     // Location
                     HStack(spacing: 5) {
-                        Image(systemName: "map.pin")
+                        Image(systemName: "mappin.and.ellipse")
                             .font(.subheadline)
                             .foregroundStyle(Color.bodyTextColor)
                         Text(savedAdventure.adventure.location)
                             .font(.subheadline)
                             .foregroundStyle(Color.bodyTextColor)
+                            .multilineTextAlignment(.leading)
                     }
 
                     // Saved Date
@@ -87,8 +91,9 @@ struct HistoryCardView: View {
                 .cornerRadius(10)
                 .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Button(action: { onDelete(savedAdventure.id) }) {
+            Button(action: { showDeleteConfirmation = true }) {
                 Image(systemName: "trash.circle.fill")
                     .font(.title2)
                     .foregroundColor(.gray)
@@ -96,6 +101,14 @@ struct HistoryCardView: View {
             }
             .padding(.trailing, 15)
             .padding(.bottom, 15)
+        }
+        .alert("Delete Adventure", isPresented: $showDeleteConfirmation) {
+            Button("Confirm", role: .destructive) {
+                onDelete(savedAdventure.id)
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Are you sure you want to delete this adventure?")
         }
     }
 }

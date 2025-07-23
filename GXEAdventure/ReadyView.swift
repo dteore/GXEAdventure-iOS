@@ -13,6 +13,7 @@ struct ReadyView: View {
     let generateNewAdventure: (Bool, String?, String?) -> Void
     let onStartAdventure: (Adventure) -> Void
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var adventureViewModel: AdventureViewModel
 
     @State private var showingDetailsAlert: Bool = false
 

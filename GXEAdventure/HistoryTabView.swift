@@ -7,9 +7,10 @@ struct HistoryTabView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    HistoryHeaderView(showSettings: $showSettings)
+            VStack(spacing: 0) {
+                HistoryHeaderView(showSettings: $showSettings)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
 
                     if savedAdventuresManager.savedAdventures.isEmpty {
                         Text("No adventures saved yet. Complete an adventure to see it here!")
@@ -20,11 +21,9 @@ struct HistoryTabView: View {
                     } else {
                         ForEach(savedAdventuresManager.savedAdventures) { savedAdventure in
                             HistoryCardView(savedAdventure: savedAdventure, onCardTapped: { adventure in
-                                adventureViewModel.adventure = adventure
-                                if adventure.type.lowercased() == "tour" {
-                                    adventureViewModel.showTourView = true
-                                } else {
-                                    adventureViewModel.showScavengerHunt = true
+                                Task {
+                                    try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+                                    adventureViewModel.presentedAdventure = adventure
                                 }
                             }, onDelete: { id in
                                 savedAdventuresManager.deleteAdventure(id: id)
@@ -36,21 +35,17 @@ struct HistoryTabView: View {
                     }
                 }
             }
+            }
             .background(Color.appBackground.ignoresSafeArea())
             .navigationBarHidden(true)
         }
-        .fullScreenCover(isPresented: $adventureViewModel.showTourView) {
-            if let adventure = adventureViewModel.adventure {
-                TourView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
-                    adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
-                })
-            }
-        }
-        .fullScreenCover(isPresented: $adventureViewModel.showScavengerHunt) {
-            if let adventure = adventureViewModel.adventure {
-                ScavengerHuntView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
-                    adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
-                })
+        .fullScreenCover(item: $adventureViewModel.presentedAdventure, onDismiss: {
+            adventureViewModel.presentedAdventure = nil
+        }) { adventure in
+            if adventure.type.lowercased() == "tour" {
+                TourView(adventure: adventure)
+            } else {
+                ScavengerHuntView(adventure: adventure)
             }
         }
     }

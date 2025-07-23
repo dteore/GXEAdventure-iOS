@@ -27,6 +27,18 @@ struct SuccessView: View {
     }
     var body: some View {
         VStack(spacing: 30) {
+            HStack {
+                Button(action: { dismissParent() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                }
+                .padding(.leading, 10)
+                .padding(.top, 15)
+                Spacer()
+            }
+            .padding(.horizontal)
+            
             Spacer()
             
             // MARK: - Success Message
@@ -89,19 +101,7 @@ struct SuccessView: View {
         .sheet(isPresented: $showFeedbackSheet) {
             FeedbackView()
         }
-        .overlay(
-            HStack {
-                Button(action: { dismissParent() }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(.gray)
-                }
-                .padding(.leading, 10)
-                .padding(.top, 15)
-                Spacer()
-            }
-            , alignment: .topLeading
-        )
+        
         .onAppear {
             savedAdventuresManager.saveAdventure(adventure)
         }

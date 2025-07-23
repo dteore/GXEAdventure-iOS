@@ -24,12 +24,14 @@ struct ContentView: View {
             AdventuresTabView(showSettings: $showSettings)
                 .tabItem {
                     Label("Adventures", systemImage: "map.fill")
+                        .padding(.top, 25)
                 }
                 .tag(Tab.adventures)
 
             HistoryTabView(showSettings: $showSettings)
                 .tabItem {
                     Label("History", systemImage: "book.closed.fill")
+                        .padding(.top, 25)
                 }
                 .tag(Tab.history)
         }

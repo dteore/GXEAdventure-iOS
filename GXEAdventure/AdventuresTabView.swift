@@ -29,8 +29,8 @@ struct AdventuresTabView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        HeaderSection(showSettings: $showSettings, showScavengerHunt: $adventureViewModel.showScavengerHunt, generateAction: {
-                            adventureViewModel.showScavengerHunt = true
+                        HeaderSection(showSettings: $showSettings, showScavengerHunt: .constant(false), generateAction: {
+                            // This action is now handled by the StartAdventureSection or CustomizationSection
                         })
                         
                         if isLocationAuthorized {
@@ -59,32 +59,31 @@ struct AdventuresTabView: View {
                 }
             }
         )
-        .fullScreenCover(isPresented: $adventureViewModel.isAdventureReady) {
+        .fullScreenCover(isPresented: $adventureViewModel.isAdventureReady, onDismiss: {
+            // This closure is called after ReadyView is dismissed.
+            // If an adventure was prepared, present it now.
+            if let adventure = adventureViewModel.adventure {
+                adventureViewModel.presentedAdventure = adventure
+            }
+            adventureViewModel.adventure = nil // Clear the adventure once it's presented or dismissed
+        }) {
             if let adventure = adventureViewModel.adventure {
                 ReadyView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
                     adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
                 }, onStartAdventure: { startedAdventure in
                     adventureViewModel.isAdventureReady = false // Dismiss ReadyView
-                    if startedAdventure.type.lowercased() == "tour" {
-                        adventureViewModel.showTourView = true
-                    } else {
-                        adventureViewModel.showScavengerHunt = true
-                    }
+                    adventureViewModel.presentedAdventure = startedAdventure
                 })
             }
         }
-        .fullScreenCover(isPresented: $adventureViewModel.showScavengerHunt) {
-            if let adventure = adventureViewModel.adventure {
-                ScavengerHuntView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
-                    adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
-                })
-            }
-        }
-        .fullScreenCover(isPresented: $adventureViewModel.showTourView) {
-            if let adventure = adventureViewModel.adventure {
-                TourView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
-                    adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
-                })
+        .fullScreenCover(item: $adventureViewModel.presentedAdventure, onDismiss: {
+            // This closure is called after TourView/ScavengerHuntView is dismissed.
+            adventureViewModel.presentedAdventure = nil
+        }) { adventure in
+            if adventure.type.lowercased() == "tour" {
+                TourView(adventure: adventure)
+            } else {
+                ScavengerHuntView(adventure: adventure)
             }
         }
         .alert(item: $adventureViewModel.apiError) { errorWrapper in

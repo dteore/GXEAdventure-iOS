@@ -24,7 +24,7 @@ public struct AdventureNode: Codable, Identifiable {
     let metadata: AdventureNodeMetadata
 }
 
-public struct Adventure: Codable {
+public struct Adventure: Codable, Identifiable {
     public let id: String
     let questId: String?
     let title: String
@@ -62,8 +62,7 @@ struct AdventureService {
         if let origin = origin {
             requestBody["origin"] = origin
         }
-        // Apply default values as per schema if not provided
-        requestBody["distancekm"] = distanceKm ?? 1.0
+        
         requestBody["segments"] = segments ?? 6
         
         if let theme = theme {

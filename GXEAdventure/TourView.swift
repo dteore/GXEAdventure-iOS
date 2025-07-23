@@ -11,9 +11,9 @@ import SwiftUI
 public struct TourView: View {
     let adventure: Adventure
     @Environment(\.dismiss) private var dismiss
-    @State private var showSuccessView = false // New state to control SuccessView presentation
+    @EnvironmentObject private var adventureViewModel: AdventureViewModel
     @State private var currentNodeIndex: Int = 0 // Track current node displayed
-    let generateNewAdventure: (Bool, String?, String?) -> Void
+    @State private var showSuccessView = false // New state to control SuccessView presentation
     @State private var showAbandonAlert: Bool = false
     private var tourProgress: Double {
         guard !adventure.nodes.isEmpty else { return 0.0 }
@@ -79,7 +79,7 @@ public struct TourView: View {
                             Button("COMPLETE TOUR") {
                                 showSuccessView = true
                             }
-                            .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                            .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .primaryAppColor))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
                         }
@@ -113,7 +113,8 @@ public struct TourView: View {
                 },
                 onKeepGoing: { isRandom, type, theme in
                     showSuccessView = false
-                    generateNewAdventure(isRandom, type, theme)
+                    adventureViewModel.presentedAdventure = nil
+                    adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
                 },
                 dismissParent: { dismiss() }
             )
@@ -135,7 +136,3 @@ public struct TourView: View {
         )
     } // Closing brace for public var body: some View
 } // Closing brace for public struct TourView: View
-
-
-
-                        
