@@ -29,7 +29,7 @@ struct HeaderSection: View {
                     .font(.body)
                     .foregroundStyle(Color.bodyTextColor)
                     .padding(.top, 5)
-                
+            
                 .font(.body.weight(.semibold))
                 .foregroundStyle(Color.primaryAppColor)
                 .padding(.top, 8)
@@ -89,7 +89,7 @@ struct CustomizationSection: View {
     @Binding var isLoading: Bool
     let isLocationAuthorized: Bool
     let generateAction: () -> Void
-    private let themes = ["Architecture", "Arts & Culture", "Celebrities", "Food", "Ghost Stories", "History", "Nature", "Photography", "Queer History","Wildlife"]
+    private let themes = ["Architecture", "Arts & Culture", "Celebrities", "Food", "Ghost Stories", "Forgotten History", "Nature", "Photography", "Queer History","Wildlife"]
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Customization")
