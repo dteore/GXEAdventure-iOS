@@ -6,6 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXCopyFilesBuildPhase section */
+		6FD4BFCC2E32D2930061EC12 /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		6FFF62292E09D453004D09D3 /* NVRSE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NVRSE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -68,6 +81,7 @@
 				6FFF62252E09D453004D09D3 /* Sources */,
 				6FFF62262E09D453004D09D3 /* Frameworks */,
 				6FFF62272E09D453004D09D3 /* Resources */,
+				6FD4BFCC2E32D2930061EC12 /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
 			);

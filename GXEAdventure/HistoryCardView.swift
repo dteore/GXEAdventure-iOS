@@ -22,6 +22,27 @@ struct HistoryCardView: View {
         !savedAdventure.adventure.summary.isEmpty
     }
 
+    private func formatLocationForShare(_ location: String) -> String {
+        let components = location.components(separatedBy: ", ")
+        if components.count >= 2 {
+            return "\(components[components.count - 2]), \(components[components.count - 1])"
+        }
+        return location // Fallback if format is unexpected
+    }
+
+    private func shareAdventure() {
+        let formattedLocation = formatLocationForShare(savedAdventure.adventure.location)
+        let shareText = "Check out this adventure: \(savedAdventure.adventure.title) in \(formattedLocation)!\n\n\(savedAdventure.adventure.summary)"
+        
+        let activityViewController = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
+        
+        // Present the share sheet
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootViewController = windowScene.windows.first?.rootViewController {
+            rootViewController.present(activityViewController, animated: true, completion: nil)
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
@@ -36,21 +57,24 @@ struct HistoryCardView: View {
                     
                     Spacer()
                     
-                    Button(action: { showDeleteConfirmation = true }) {
-                        Image(systemName: "trash.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.gray)
-                            .padding(5)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    
                     Button(action: { onToggleFavorite(savedAdventure.id) }) {
                         Image(systemName: savedAdventure.isFavorite ? "heart.fill" : "heart")
                             .font(.title2)
                             .foregroundColor(savedAdventure.isFavorite ? .red : .gray)
-                            .padding(5)
+                            .offset(y: 3) // Adjust vertical alignment
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .frame(width: 44, height: 44) // Standardize size
+
+                    Button(action: {
+                        shareAdventure()
+                    }) {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .frame(width: 44, height: 44) // Standardize size
                 }
 
                 // Summary/Details (conditionally shown)
@@ -114,7 +138,7 @@ struct HistoryCardView: View {
                     Image(systemName: "chevron.right")
                         .font(.title2)
                         .foregroundColor(.gray)
-                        .padding(5)
+                        .frame(width: 44, height: 44) // Standardize size
                         .rotationEffect(.degrees(isExpanded ? -90 : 0))
                 }
             }

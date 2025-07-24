@@ -7,31 +7,42 @@ struct HistoryTabView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    HistoryHeaderView(showSettings: $showSettings)
+            List {
+                HistoryHeaderView(showSettings: $showSettings)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .background(Color.appBackground)
 
-                    if savedAdventuresManager.savedAdventures.isEmpty {
-                        Text("No adventures saved yet. Complete an adventure to see it here!")
-                            .font(.headline)
-                            .foregroundStyle(Color.bodyTextColor)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    } else {
-                        ForEach(savedAdventuresManager.savedAdventures) { savedAdventure in
-                            HistoryCardView(savedAdventure: savedAdventure, onDelete: { id in
-                                savedAdventuresManager.deleteAdventure(id: id)
-                            }, onToggleFavorite: { id in
-                                savedAdventuresManager.toggleFavorite(id: id)
-                            })
-                                .padding(.horizontal)
-                        }
+                if savedAdventuresManager.savedAdventures.isEmpty {
+                    Text("No adventures saved yet. Complete an adventure to see it here!")
+                        .font(.headline)
+                        .foregroundStyle(Color.bodyTextColor)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                } else {
+                    ForEach(savedAdventuresManager.savedAdventures.indices, id: \.self) { index in
+                        let savedAdventure = savedAdventuresManager.savedAdventures[index]
+                        HistoryCardView(savedAdventure: savedAdventure, onDelete: { id in
+                            savedAdventuresManager.deleteAdventure(id: id)
+                        }, onToggleFavorite: { id in
+                            savedAdventuresManager.toggleFavorite(id: id)
+                        })
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .padding(.top, index == 0 ? 10 : 0) // Add 10px padding to the top of the first card
+                    }
+                    .onDelete { indexSet in
+                        savedAdventuresManager.deleteAdventure(atOffsets: indexSet)
                     }
                 }
             }
+            .listStyle(.plain) // Use plain style for custom appearance
             .background(Color.appBackground.ignoresSafeArea())
             .navigationBarHidden(true)
         }
+        .preferredColorScheme(.light)
     }
 }
 
@@ -55,7 +66,7 @@ private struct HistoryHeaderView: View {
                     .padding(.top, 5)
             }
             .padding(.horizontal, 20)
-            .padding(.bottom, 45)
+            .padding(.bottom, 20) // Adjusted padding to match card spacing
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(red: 217/255, green: 217/255, blue: 217/255))
 

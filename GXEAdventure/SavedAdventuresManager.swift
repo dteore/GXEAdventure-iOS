@@ -60,6 +60,10 @@ class SavedAdventuresManager: ObservableObject {
         savedAdventures.removeAll { $0.id == id }
     }
 
+    func deleteAdventure(atOffsets offsets: IndexSet) {
+        savedAdventures.remove(atOffsets: offsets)
+    }
+
     func toggleFavorite(id: UUID) {
         if let index = savedAdventures.firstIndex(where: { $0.id == id }) {
             savedAdventures[index].isFavorite.toggle()
