@@ -33,7 +33,7 @@ class SavedAdventuresManager: ObservableObject {
 
     func saveAdventure(_ adventure: Adventure) {
         let newSavedAdventure = SavedAdventure(adventure: adventure)
-        savedAdventures.append(newSavedAdventure)
+        savedAdventures.insert(newSavedAdventure, at: 0)
     }
 
     private func saveAdventures() {
@@ -45,7 +45,10 @@ class SavedAdventuresManager: ObservableObject {
     private func loadAdventures() {
         if let savedAdventuresData = UserDefaults.standard.data(forKey: userDefaultsKey),
            let decodedAdventures = try? JSONDecoder().decode([SavedAdventure].self, from: savedAdventuresData) {
-            self.savedAdventures = decodedAdventures.sorted(by: { $0.savedDate > $1.savedDate }) // Sort by newest first
+            self.savedAdventures = decodedAdventures.sorted(by: { $0.savedDate > $1.savedDate })
+            print("SavedAdventuresManager: Loaded \(self.savedAdventures.count) adventures.")
+        } else {
+            print("SavedAdventuresManager: No adventures found in UserDefaults or decoding failed.")
         }
     }
     

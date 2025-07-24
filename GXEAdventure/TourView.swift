@@ -13,7 +13,13 @@ public struct TourView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var adventureViewModel: AdventureViewModel
     @State private var currentNodeIndex: Int = 0 // Track current node displayed
+
+    public init(adventure: Adventure) {
+        self.adventure = adventure
+        _currentNodeIndex = State(initialValue: adventure.nodes.firstIndex(where: { $0.type != "start" }) ?? 0)
+    }
     @State private var showSuccessView = false // New state to control SuccessView presentation
+    @State private var isCardExpanded: Bool = true // State for accordion card expansion
     @State private var showAbandonAlert: Bool = false
     private var tourProgress: Double {
         guard !adventure.nodes.isEmpty else { return 0.0 }
@@ -84,7 +90,7 @@ public struct TourView: View {
                             .padding(.vertical, 12)
                         }
 
-                        if currentNodeIndex > 0 {
+                        if currentNodeIndex > 1 {
                             Button(action: {
                                 currentNodeIndex -= 1
                             }) {

@@ -66,7 +66,7 @@ public struct ScavengerHuntView: View {
                         Text(adventure.title)
                             .font(.title.bold())
                             .foregroundStyle(.white)
-                        Text(adventure.nodes.first?.content ?? "No clue available.")
+                        Text(adventure.nodes.first(where: { $0.type != "start" })?.content ?? "No clue available.")
                             .font(.body)
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.white.opacity(0.8))

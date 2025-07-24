@@ -87,7 +87,7 @@ class AdventureViewModel: ObservableObject {
             // Angle: The Food Critic
             "You are a world-renowned food critic. Guide me on a \(adventureType) where the focus is \(adventureTheme), but find a way to connect each stop to a culinary story or a nearby place to eat.",
             // Angle: The Luxury Connoisseur
-                       "You are a connoisseur of the finer things, a guide to the city's most exclusive secrets. Create a high-end \(adventureType) focused on \(adventureTheme), revealing hidden gems, luxurious details, and stories that aren't in the guidebooks."
+            "You are a connoisseur of the finer things, a guide to the city's most exclusive secrets. Create a high-end \(adventureType) focused on \(adventureTheme), revealing hidden gems, luxurious details, and stories that aren't in the guidebooks."
         ]
         
         return promptTemplates.randomElement() ?? "Take me on a \(adventureType) about \(adventureTheme)."

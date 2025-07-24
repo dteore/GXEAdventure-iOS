@@ -105,8 +105,35 @@ struct AdventureService {
         print("Raw API Response: \(String(data: data, encoding: .utf8) ?? "Unable to convert data to string")")
 
         do {
-            let responseData = try JSONDecoder().decode(AdventureResponse.self, from: data)
-            let adventure = responseData.adventure
+            var responseData = try JSONDecoder().decode(AdventureResponse.self, from: data)
+            var adventure = responseData.adventure
+
+            // If the summary is empty, create one from all the relevant nodes.
+            if adventure.summary.isEmpty {
+                let summaryContent = adventure.nodes
+                    .filter { $0.type != "start" && $0.type != "ending" }
+                    .map { $0.content }
+                    .joined(separator: "\n\n")
+                
+                // Create a new Adventure object with the generated summary.
+                adventure = Adventure(
+                    id: adventure.id,
+                    questId: adventure.questId,
+                    title: adventure.title,
+                    location: adventure.location,
+                    type: adventure.type,
+                    theme: adventure.theme,
+                    playerId: adventure.playerId,
+                    summary: summaryContent,
+                    status: adventure.status,
+                    nodes: adventure.nodes,
+                    createdAt: adventure.createdAt,
+                    updatedAt: adventure.updatedAt,
+                    waypointCount: adventure.waypointCount,
+                    reward: adventure.reward
+                )
+            }
+
             print("Decoded Adventure Object: \(adventure)") // Diagnostic print
             let details = adventure.nodes.map { $0.content }.joined(separator: "\n\n")
             return (adventure, details)

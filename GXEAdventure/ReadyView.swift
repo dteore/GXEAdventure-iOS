@@ -54,10 +54,24 @@ struct ReadyView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
-                Text("Reward: \(adventure.reward ?? "N/A")")
-                    .font(.title3)
-                    .foregroundStyle(Color.bodyTextColor) // FIX: Explicit color
-                    .padding(.top, 5)
+                // Display content from the "start" node
+                if let startNode = adventure.nodes.first(where: { $0.type == "start" }) {
+                    Text(startNode.content)
+                        .font(.body)
+                        .foregroundStyle(Color.bodyTextColor)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                        .padding(.top, 10)
+                } else {
+                    Text("No starting information available.")
+                        .font(.body)
+                        .foregroundStyle(Color.bodyTextColor)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                        .padding(.top, 10)
+                }
+
+                
 
                 Button("START") {
                     onStartAdventure(adventure)

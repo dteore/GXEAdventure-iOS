@@ -20,13 +20,7 @@ struct HistoryTabView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else {
                             ForEach(savedAdventuresManager.savedAdventures) { savedAdventure in
-                                HistoryCardView(savedAdventure: savedAdventure, onCardTapped: { adventure in
-                                    // This closure will no longer be called because the button is disabled
-                                    Task {
-                                        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
-                                        adventureViewModel.presentedAdventure = adventure
-                                    }
-                                }, onDelete: { id in
+                                HistoryCardView(savedAdventure: savedAdventure, onDelete: { id in
                                     savedAdventuresManager.deleteAdventure(id: id)
                                 }, onToggleFavorite: { id in
                                     savedAdventuresManager.toggleFavorite(id: id)
@@ -39,15 +33,6 @@ struct HistoryTabView: View {
             }
             .background(Color.appBackground.ignoresSafeArea())
             .navigationBarHidden(true)
-        }
-        .fullScreenCover(item: $adventureViewModel.presentedAdventure, onDismiss: {
-            adventureViewModel.presentedAdventure = nil
-        }) { adventure in
-            if adventure.type.lowercased() == "tour" {
-                TourView(adventure: adventure)
-            } else {
-                ScavengerHuntView(adventure: adventure)
-            }
         }
     }
 }

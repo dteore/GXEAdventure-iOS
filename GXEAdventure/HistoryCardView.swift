@@ -12,27 +12,30 @@ extension DateFormatter {
 
 struct HistoryCardView: View {
     let savedAdventure: SavedAdventure
-    let onCardTapped: (Adventure) -> Void // This is no longer used but kept for structural consistency
     let onDelete: (UUID) -> Void
     let onToggleFavorite: (UUID) -> Void
 
     @State private var showDeleteConfirmation: Bool = false
+    @State private var isExpanded: Bool = false // New state for accordion expansion
+
+    private var hasSummary: Bool {
+        !savedAdventure.adventure.summary.isEmpty
+    }
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            // --- CHANGE: This is no longer a Button. It's now a VStack to hold the content. ---
-            // This allows the favorite button inside it to be tappable.
+        VStack(alignment: .leading, spacing: 0) {
+            // Main tappable area for expansion
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .top) {
                     Text(savedAdventure.adventure.title)
                         .font(.title2.bold())
                         .foregroundStyle(Color.headingColor)
-                        .lineLimit(2)
+                        .lineLimit(isExpanded ? nil : 2) // Limit lines when collapsed
                         .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.leading)
                     Spacer()
-                   
-                    // Favorite Button is now tappable because its parent is not disabled.
+
+                    // Favorite Button (still tappable independently)
                     Button(action: { onToggleFavorite(savedAdventure.id) }) {
                         Image(systemName: savedAdventure.isFavorite ? "heart.fill" : "heart")
                             .font(.title2)
@@ -40,6 +43,29 @@ struct HistoryCardView: View {
                             .padding(5)
                     }
                     .buttonStyle(PlainButtonStyle())
+
+                    // Expansion Indicator
+                    Image(systemName: "chevron.right")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                }
+
+                // Summary/Details - only show when expanded
+                if isExpanded {
+                    if hasSummary {
+                        Text(savedAdventure.adventure.summary)
+                            .font(.body)
+                            .foregroundStyle(Color.bodyTextColor)
+                            .multilineTextAlignment(.leading)
+                            .padding(.top, 5)
+                    } else {
+                        Text("No summary available for this adventure.")
+                            .font(.body)
+                            .foregroundStyle(Color.bodyTextColor)
+                            .multilineTextAlignment(.leading)
+                            .padding(.top, 5)
+                    }
                 }
 
                 // Location
@@ -82,24 +108,25 @@ struct HistoryCardView: View {
                             .cornerRadius(5)
                             .foregroundStyle(Color.primaryAppColor)
                     }
+                    Spacer()
+                    Button(action: { showDeleteConfirmation = true }) {
+                        Image(systemName: "trash.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                            .padding(5)
+                    }
                 }
             }
             .padding()
-            .frame(maxWidth: .infinity, alignment: .leading) // Ensures the VStack takes full width
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.white)
             .cornerRadius(10)
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-            // --- CHANGE: The .disabled(true) modifier has been removed ---
-
-            // The trash button remains outside the main content block.
-            Button(action: { showDeleteConfirmation = true }) {
-                Image(systemName: "trash.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.gray)
-                    .padding(5)
+            .onTapGesture {
+                withAnimation {
+                    isExpanded.toggle()
+                }
             }
-            .padding(.trailing, 15)
-            .padding(.bottom, 15)
         }
         .alert("Delete Adventure", isPresented: $showDeleteConfirmation) {
             Button("Confirm", role: .destructive) {
@@ -115,38 +142,64 @@ struct HistoryCardView: View {
 // MARK: - Preview
 struct HistoryCardView_Previews: PreviewProvider {
     static var previews: some View {
-        HistoryCardView(
-            savedAdventure: SavedAdventure(
-                adventure: Adventure(
-                    id: UUID().uuidString,
-                    questId: nil,
-                    title: "Palm Springs: Desert Canvas Tour",
-                    location: "1200 N Sunrise Way, Palm Springs, CA 92262, USA",
-                    type: "Tour",
-                    theme: "Photography",
-                    playerId: "test-player-id",
-                    summary: "",
-                    status: "completed",
-                    nodes: [],
-                    createdAt: "",
-                    updatedAt: "",
-                    waypointCount: 0,
-                    reward: ""
+        VStack {
+            HistoryCardView(
+                savedAdventure: SavedAdventure(
+                    adventure: Adventure(
+                        id: UUID().uuidString,
+                        questId: nil,
+                        title: "Palm Springs: Desert Canvas Tour",
+                        location: "1200 N Sunrise Way, Palm Springs, CA 92262, USA",
+                        type: "Tour",
+                        theme: "Photography",
+                        playerId: "test-player-id",
+                        summary: "A beautiful tour of the desert landscape and architecture.",
+                        status: "completed",
+                        nodes: [],
+                        createdAt: "",
+                        updatedAt: "",
+                        waypointCount: 0,
+                        reward: ""
+                    ),
+                    savedDate: Date()
                 ),
-                savedDate: Date()
-            ),
-            onCardTapped: { adventure in
-                print("Card tapped for: \(adventure.title)")
-            },
-            onDelete: { id in
-                print("Delete adventure with ID: \(id)")
-            },
-            onToggleFavorite: { id in
-                print("Toggle favorite for adventure with ID: \(id)")
-            }
-        )
+                onDelete: { id in
+                    print("Delete adventure with ID: \(id)")
+                },
+                onToggleFavorite: { id in
+                    print("Toggle favorite for adventure with ID: \(id)")
+                }
+            )
+            
+            HistoryCardView(
+                savedAdventure: SavedAdventure(
+                    adventure: Adventure(
+                        id: UUID().uuidString,
+                        questId: nil,
+                        title: "Adventure Without a Summary",
+                        location: "Someplace, USA",
+                        type: "Scavenger Hunt",
+                        theme: "Mystery",
+                        playerId: "test-player-id",
+                        summary: "", // Empty summary
+                        status: "completed",
+                        nodes: [],
+                        createdAt: "",
+                        updatedAt: "",
+                        waypointCount: 0,
+                        reward: ""
+                    ),
+                    savedDate: Date()
+                ),
+                onDelete: { id in
+                    print("Delete adventure with ID: \(id)")
+                },
+                onToggleFavorite: { id in
+                    print("Toggle favorite for adventure with ID: \(id)")
+                }
+            )
+        }
         .padding()
         .previewLayout(.sizeThatFits)
     }
 }
-
