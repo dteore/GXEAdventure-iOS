@@ -10,7 +10,7 @@ struct SavedAdventure: Identifiable, Codable {
     var isFavorite: Bool = false
 
     init(adventure: Adventure, savedDate: Date = Date(), isFavorite: Bool = false) {
-        self.id = UUID()
+        self.id = UUID(uuidString: adventure.id) ?? UUID()
         self.adventure = adventure
         self.savedDate = savedDate
         self.isFavorite = isFavorite
