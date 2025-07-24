@@ -71,7 +71,7 @@ class AdventureViewModel: ObservableObject {
             // Persona: The Comedian
             "You're a stand-up comedian. Give me a hilarious and sarcastic \(adventureType) about the local \(adventureTheme). Roast the landmarks, tell funny anecdotes, and find the humor in it all.",
             // Angle: The MythBuster
-            "Design a \(adventureType) that debunks common myths about the local \(adventureTheme). At each stop, present a popular belief and then reveal the surprising truth.",
+            "Create a \(adventureType) that debunks common myths about the local \(adventureTheme). At each stop, present a popular belief and then reveal the surprising truth.",
             // Persona: The Futurist
             "You are a guide from the year 2200. Take me on a \(adventureType) and explain the local \(adventureTheme) from a future perspective. How will these places be remembered or what will they become?",
             // Persona: The Zen Master
