@@ -179,12 +179,6 @@ struct NotificationBannerView: View {
                     }
                 }
                 .padding()
-                .onAppear {
-                    // Automatically dismiss content after a delay
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                        withAnimation { showContent = false }
-                    }
-                }
             }
         }
         .fixedSize(horizontal: false, vertical: true)
