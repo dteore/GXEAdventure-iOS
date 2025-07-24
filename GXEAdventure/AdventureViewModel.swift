@@ -37,7 +37,7 @@ class AdventureViewModel: ObservableObject {
                     promptText = "Take me on a random adventure."
                 } else if let adventureType = type {
                     promptText = "Take me on \(adventureType.replacingOccurrences(of: " (", with: " (").replacingOccurrences(of: ")", with: ""))"
-                    if let adventureTheme = theme { promptText += " through a \(adventureTheme) adventure." } else { promptText += " adventure." }
+                    if let adventureTheme = theme { promptText += " learning about \(adventureTheme)." } else { promptText += " adventure." }
                 } else if let adventureTheme = theme {
                     promptText = "Take me on a \(adventureTheme) adventure."
                 } else {
