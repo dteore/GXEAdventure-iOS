@@ -12,7 +12,7 @@ extension DateFormatter {
 
 struct HistoryCardView: View {
     let savedAdventure: SavedAdventure
-    let onCardTapped: (Adventure) -> Void
+    let onCardTapped: (Adventure) -> Void // This is no longer used but kept for structural consistency
     let onDelete: (UUID) -> Void
     let onToggleFavorite: (UUID) -> Void
 
@@ -20,79 +20,78 @@ struct HistoryCardView: View {
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            Button(action: { onCardTapped(savedAdventure.adventure) }) {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(alignment: .top) {
-                        Text(savedAdventure.adventure.title)
-                            .font(.title2.bold())
-                            .foregroundStyle(Color.headingColor)
-                            .lineLimit(2)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .multilineTextAlignment(.leading)
-                        Spacer()
-                        
-                        // Favorite Button
-                        Button(action: { onToggleFavorite(savedAdventure.id) }) {
-                            Image(systemName: savedAdventure.isFavorite ? "heart.fill" : "heart")
-                                .font(.title2)
-                                .foregroundColor(savedAdventure.isFavorite ? .red : .gray)
-                                .padding(5)
-                        }
-                        .buttonStyle(PlainButtonStyle()) // Use PlainButtonStyle to avoid default button styling
+            // --- CHANGE: This is no longer a Button. It's now a VStack to hold the content. ---
+            // This allows the favorite button inside it to be tappable.
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top) {
+                    Text(savedAdventure.adventure.title)
+                        .font(.title2.bold())
+                        .foregroundStyle(Color.headingColor)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                   
+                    // Favorite Button is now tappable because its parent is not disabled.
+                    Button(action: { onToggleFavorite(savedAdventure.id) }) {
+                        Image(systemName: savedAdventure.isFavorite ? "heart.fill" : "heart")
+                            .font(.title2)
+                            .foregroundColor(savedAdventure.isFavorite ? .red : .gray)
+                            .padding(5)
                     }
+                    .buttonStyle(PlainButtonStyle())
+                }
 
-                    // Location
-                    HStack(spacing: 5) {
-                        Image(systemName: "mappin.and.ellipse")
-                            .font(.subheadline)
-                            .foregroundStyle(Color.bodyTextColor)
-                        Text(savedAdventure.adventure.location)
-                            .font(.subheadline)
-                            .foregroundStyle(Color.bodyTextColor)
-                            .multilineTextAlignment(.leading)
-                    }
+                // Location
+                HStack(spacing: 5) {
+                    Image(systemName: "mappin.and.ellipse")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.bodyTextColor)
+                    Text(savedAdventure.adventure.location)
+                        .font(.subheadline)
+                        .foregroundStyle(Color.bodyTextColor)
+                        .multilineTextAlignment(.leading)
+                }
 
-                    // Saved Date
-                    HStack(spacing: 5) {
-                        Image(systemName: "calendar")
-                            .font(.subheadline)
-                            .foregroundStyle(Color.bodyTextColor)
-                        Text("Saved: \(savedAdventure.savedDate, formatter: DateFormatter.mediumDate)")
-                            .font(.subheadline)
-                            .foregroundStyle(Color.bodyTextColor)
-                    }
+                // Saved Date
+                HStack(spacing: 5) {
+                    Image(systemName: "calendar")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.bodyTextColor)
+                    Text("Saved: \(savedAdventure.savedDate, formatter: DateFormatter.mediumDate)")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.bodyTextColor)
+                }
 
-                    // Type and Theme Tags
-                    HStack(spacing: 5) {
-                        Text(savedAdventure.adventure.type)
+                // Type and Theme Tags
+                HStack(spacing: 5) {
+                    Text(savedAdventure.adventure.type)
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.primaryAppColor.opacity(0.1))
+                        .cornerRadius(5)
+                        .foregroundStyle(Color.primaryAppColor)
+
+                    if let theme = savedAdventure.adventure.theme {
+                        Text(theme)
                             .font(.caption.weight(.semibold))
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(Color.primaryAppColor.opacity(0.1))
                             .cornerRadius(5)
                             .foregroundStyle(Color.primaryAppColor)
-
-                        if let theme = savedAdventure.adventure.theme {
-                            Text(theme)
-                                .font(.caption.weight(.semibold))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.primaryAppColor.opacity(0.1))
-                                .cornerRadius(5)
-                                .foregroundStyle(Color.primaryAppColor)
-                        }
                     }
-                    Text("Replay")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(Color.primaryAppColor)
                 }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(10)
-                .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading) // Ensures the VStack takes full width
+            .background(Color.white)
+            .cornerRadius(10)
+            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+            // --- CHANGE: The .disabled(true) modifier has been removed ---
 
+            // The trash button remains outside the main content block.
             Button(action: { showDeleteConfirmation = true }) {
                 Image(systemName: "trash.circle.fill")
                     .font(.title2)
@@ -150,3 +149,4 @@ struct HistoryCardView_Previews: PreviewProvider {
         .previewLayout(.sizeThatFits)
     }
 }
+

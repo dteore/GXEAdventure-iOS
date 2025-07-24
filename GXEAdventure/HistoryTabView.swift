@@ -12,29 +12,30 @@ struct HistoryTabView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
 
-                    if savedAdventuresManager.savedAdventures.isEmpty {
-                        Text("No adventures saved yet. Complete an adventure to see it here!")
-                            .font(.headline)
-                            .foregroundStyle(Color.bodyTextColor)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    } else {
-                        ForEach(savedAdventuresManager.savedAdventures) { savedAdventure in
-                            HistoryCardView(savedAdventure: savedAdventure, onCardTapped: { adventure in
-                                Task {
-                                    try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
-                                    adventureViewModel.presentedAdventure = adventure
-                                }
-                            }, onDelete: { id in
-                                savedAdventuresManager.deleteAdventure(id: id)
-                            }, onToggleFavorite: { id in
-                                savedAdventuresManager.toggleFavorite(id: id)
-                            })
-                                .padding(.horizontal)
+                        if savedAdventuresManager.savedAdventures.isEmpty {
+                            Text("No adventures saved yet. Complete an adventure to see it here!")
+                                .font(.headline)
+                                .foregroundStyle(Color.bodyTextColor)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        } else {
+                            ForEach(savedAdventuresManager.savedAdventures) { savedAdventure in
+                                HistoryCardView(savedAdventure: savedAdventure, onCardTapped: { adventure in
+                                    // This closure will no longer be called because the button is disabled
+                                    Task {
+                                        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+                                        adventureViewModel.presentedAdventure = adventure
+                                    }
+                                }, onDelete: { id in
+                                    savedAdventuresManager.deleteAdventure(id: id)
+                                }, onToggleFavorite: { id in
+                                    savedAdventuresManager.toggleFavorite(id: id)
+                                })
+                                    .padding(.horizontal)
+                            }
                         }
                     }
                 }
-            }
             }
             .background(Color.appBackground.ignoresSafeArea())
             .navigationBarHidden(true)
@@ -93,3 +94,4 @@ struct HistoryTabView_Previews: PreviewProvider {
             .environmentObject(AdventureViewModel(locationManager: LocationManager()))
     }
 }
+
