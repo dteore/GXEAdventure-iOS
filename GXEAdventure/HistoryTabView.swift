@@ -7,26 +7,24 @@ struct HistoryTabView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                HistoryHeaderView(showSettings: $showSettings)
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    HistoryHeaderView(showSettings: $showSettings)
 
-                        if savedAdventuresManager.savedAdventures.isEmpty {
-                            Text("No adventures saved yet. Complete an adventure to see it here!")
-                                .font(.headline)
-                                .foregroundStyle(Color.bodyTextColor)
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        } else {
-                            ForEach(savedAdventuresManager.savedAdventures) { savedAdventure in
-                                HistoryCardView(savedAdventure: savedAdventure, onDelete: { id in
-                                    savedAdventuresManager.deleteAdventure(id: id)
-                                }, onToggleFavorite: { id in
-                                    savedAdventuresManager.toggleFavorite(id: id)
-                                })
-                                    .padding(.horizontal)
-                            }
+                    if savedAdventuresManager.savedAdventures.isEmpty {
+                        Text("No adventures saved yet. Complete an adventure to see it here!")
+                            .font(.headline)
+                            .foregroundStyle(Color.bodyTextColor)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    } else {
+                        ForEach(savedAdventuresManager.savedAdventures) { savedAdventure in
+                            HistoryCardView(savedAdventure: savedAdventure, onDelete: { id in
+                                savedAdventuresManager.deleteAdventure(id: id)
+                            }, onToggleFavorite: { id in
+                                savedAdventuresManager.toggleFavorite(id: id)
+                            })
+                                .padding(.horizontal)
                         }
                     }
                 }
