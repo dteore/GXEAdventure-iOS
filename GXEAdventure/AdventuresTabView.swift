@@ -15,15 +15,20 @@ struct AdventuresTabView: View {
     @State private var selectedTheme: String?
     
     @EnvironmentObject private var adventureViewModel: AdventureViewModel
-    
+    @EnvironmentObject private var notificationManager: NotificationManager
+
     private var isLocationAuthorized: Bool {
         adventureViewModel.locationManager.authorizationStatus == .authorizedWhenInUse || adventureViewModel.locationManager.authorizationStatus == .authorizedAlways
+    }
+
+    private var isNotificationAuthorized: Bool {
+        notificationManager.authorizationStatus == .authorized
     }
 
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                if isLocationAuthorized {
+                if isLocationAuthorized && isNotificationAuthorized {
                     NotificationBannerView()
                 }
                 
