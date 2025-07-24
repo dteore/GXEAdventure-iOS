@@ -64,8 +64,10 @@ struct SuccessView: View {
                         .foregroundStyle(Color.bodyTextColor)
                     
                     HStack(spacing: 30) {
-                        RatingButton(rating: .like, selection: $rating)
-                        RatingButton(rating: .dislike, selection: $rating)
+                        RatingButton(rating: .like, selection: $rating, adventure: adventure)
+                            .environmentObject(savedAdventuresManager)
+                        RatingButton(rating: .dislike, selection: $rating, adventure: adventure)
+                            .environmentObject(savedAdventuresManager)
                     }
                     
                     Button("Additional comments or ideas?") {
@@ -111,6 +113,8 @@ struct SuccessView: View {
 private struct RatingButton: View {
     let rating: SuccessView.Rating
     @Binding var selection: SuccessView.Rating?
+    let adventure: Adventure
+    @EnvironmentObject var savedAdventuresManager: SavedAdventuresManager
     
     private var isSelected: Bool {
         selection == rating
@@ -135,6 +139,13 @@ private struct RatingButton: View {
         Button {
             // Allow toggling the selection off.
             selection = isSelected ? nil : rating
+            if selection == .like {
+                if let uuid = UUID(uuidString: adventure.id) {
+                    savedAdventuresManager.toggleFavorite(id: uuid)
+                } else {
+                    print("Error: Could not convert adventure.id (String) to UUID.")
+                }
+            }
         } label: {
             Image(systemName: systemName)
                 .font(.largeTitle)
