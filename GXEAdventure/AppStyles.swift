@@ -36,19 +36,21 @@ struct PressableButtonStyle: ButtonStyle {
 
 struct SelectableButtonStyle: ButtonStyle {
     let isSelected: Bool
+    var isEnabled: Bool = true
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline)
-            .foregroundStyle(isSelected ? Color.primaryAppColor : Color.bodyTextColor)
+            .foregroundStyle(isEnabled ? (isSelected ? Color.primaryAppColor : Color.bodyTextColor) : Color.gray)
             .padding(.vertical, 8)
             .padding(.horizontal, 12)
-            .background(isSelected ? Color.primaryAppColor.opacity(0.1) : Color.clear)
+            .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? Color.primaryAppColor : Color.gray.opacity(0.5), lineWidth: 1)
+                    .stroke(isEnabled ? (isSelected ? Color.primaryAppColor : Color.gray.opacity(0.5)) : Color.gray.opacity(0.3), lineWidth: 1)
             )
+            .opacity(isEnabled ? 1.0 : 0.6)
     }
 }
 

@@ -101,7 +101,7 @@ struct CustomizationSection: View {
                 .foregroundStyle(Color.headingColor)
             HStack(spacing: 15) {
                 TypeSelectionButton(title: "Tour", selection: $selectedAdventureType)
-                TypeSelectionButton(title: "Scavenger Hunt", selection: $selectedAdventureType)
+                TypeSelectionButton(title: "Scavenger Hunt", selection: $selectedAdventureType, isEnabled: false)
                 Spacer()
             }
             Text("Theme")
@@ -128,6 +128,7 @@ struct CustomizationSection: View {
 struct TypeSelectionButton: View {
     let title: String
     @Binding var selection: String?
+    var isEnabled: Bool = true
     var body: some View {
         Button(action: { selection = title }) {
             HStack {
@@ -135,13 +136,15 @@ struct TypeSelectionButton: View {
                 Text(title)
             }
         }
-        .buttonStyle(SelectableButtonStyle(isSelected: selection == title))
+        .buttonStyle(SelectableButtonStyle(isSelected: selection == title, isEnabled: isEnabled))
+        .disabled(!isEnabled)
     }
 }
 
 struct ThemeSelectionButton: View {
     let title: String
     @Binding var selection: String?
+    var isEnabled: Bool = true
     var body: some View {
         Button(action: { selection = title }) {
             HStack {
@@ -150,7 +153,8 @@ struct ThemeSelectionButton: View {
                 Spacer()
             }
         }
-        .buttonStyle(SelectableButtonStyle(isSelected: selection == title))
+        .buttonStyle(SelectableButtonStyle(isSelected: selection == title, isEnabled: isEnabled))
+        .disabled(!isEnabled)
     }
 }
 

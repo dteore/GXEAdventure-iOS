@@ -106,7 +106,7 @@ struct AdventureService {
         print("Raw API Response: \(String(data: data, encoding: .utf8) ?? "Unable to convert data to string")")
 
         do {
-            var responseData = try JSONDecoder().decode(AdventureResponse.self, from: data)
+            let responseData = try JSONDecoder().decode(AdventureResponse.self, from: data)
             var adventure = responseData.adventure
             adventure.prompt = prompt // Save the prompt
 
