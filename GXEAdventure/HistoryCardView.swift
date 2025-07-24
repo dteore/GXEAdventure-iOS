@@ -111,11 +111,11 @@ struct HistoryCardView: View {
                             .foregroundStyle(Color.primaryAppColor)
                     }
                     Spacer()
-                    Image(systemName: "chevron.down")
+                    Image(systemName: "chevron.right")
                         .font(.title2)
                         .foregroundColor(.gray)
                         .padding(5)
-                        .rotationEffect(.degrees(isExpanded ? -180 : 0))
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
                 }
             }
             .padding()

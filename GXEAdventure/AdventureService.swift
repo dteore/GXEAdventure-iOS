@@ -32,17 +32,18 @@ public struct Adventure: Codable, Identifiable {
     let type: String
     let theme: String?
     let playerId: String
-    let summary: String
+    var summary: String
     let status: String
     let nodes: [AdventureNode]
     let createdAt: String
     let updatedAt: String
     let waypointCount: Int
     let reward: String?
+    var prompt: String? // Add prompt field
 }
 
 struct AdventureResponse: Decodable {
-    let adventure: Adventure
+    var adventure: Adventure
 }
 
 struct AdventureService {
@@ -107,31 +108,15 @@ struct AdventureService {
         do {
             var responseData = try JSONDecoder().decode(AdventureResponse.self, from: data)
             var adventure = responseData.adventure
+            adventure.prompt = prompt // Save the prompt
 
-            // If the summary is empty, create one from all the relevant nodes.
+            // If the summary is empty, create one from the prompt and all nodes.
             if adventure.summary.isEmpty {
-                let summaryContent = adventure.nodes
-                    .filter { $0.type != "start" && $0.type != "ending" }
+                let promptSection = "Prompt: \(prompt)"
+                let nodesSection = adventure.nodes
                     .map { $0.content }
                     .joined(separator: "\n\n")
-                
-                // Create a new Adventure object with the generated summary.
-                adventure = Adventure(
-                    id: adventure.id,
-                    questId: adventure.questId,
-                    title: adventure.title,
-                    location: adventure.location,
-                    type: adventure.type,
-                    theme: adventure.theme,
-                    playerId: adventure.playerId,
-                    summary: summaryContent,
-                    status: adventure.status,
-                    nodes: adventure.nodes,
-                    createdAt: adventure.createdAt,
-                    updatedAt: adventure.updatedAt,
-                    waypointCount: adventure.waypointCount,
-                    reward: adventure.reward
-                )
+                adventure.summary = "\(promptSection)\n\n\(nodesSection)"
             }
 
             print("Decoded Adventure Object: \(adventure)") // Diagnostic print
