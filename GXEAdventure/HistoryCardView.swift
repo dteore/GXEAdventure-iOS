@@ -115,7 +115,7 @@ struct HistoryCardView: View {
                         .font(.title2)
                         .foregroundColor(.gray)
                         .padding(5)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                        .rotationEffect(.degrees(isExpanded ? -90 : 0))
                 }
             }
             .padding()
