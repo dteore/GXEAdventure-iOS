@@ -117,7 +117,7 @@ struct HistoryCardView: View {
 
                 // Type and Theme Tags
                 HStack(spacing: 5) {
-                    Text(savedAdventure.adventure.type)
+                    Text(savedAdventure.adventure.type.toTitleCase())
                         .font(.caption.weight(.semibold))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
