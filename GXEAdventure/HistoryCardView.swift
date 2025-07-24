@@ -24,18 +24,26 @@ struct HistoryCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Main tappable area for expansion
             VStack(alignment: .leading, spacing: 10) {
+                // Header with Title and Action Buttons
                 HStack(alignment: .top) {
                     Text(savedAdventure.adventure.title)
                         .font(.title2.bold())
                         .foregroundStyle(Color.headingColor)
-                        .lineLimit(isExpanded ? nil : 2) // Limit lines when collapsed
+                        .lineLimit(isExpanded ? nil : 2)
                         .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.leading)
+                    
                     Spacer()
-
-                    // Favorite Button (still tappable independently)
+                    
+                    Button(action: { showDeleteConfirmation = true }) {
+                        Image(systemName: "trash.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                            .padding(5)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
                     Button(action: { onToggleFavorite(savedAdventure.id) }) {
                         Image(systemName: savedAdventure.isFavorite ? "heart.fill" : "heart")
                             .font(.title2)
@@ -43,15 +51,9 @@ struct HistoryCardView: View {
                             .padding(5)
                     }
                     .buttonStyle(PlainButtonStyle())
-
-                    // Expansion Indicator
-                    Image(systemName: "chevron.right")
-                        .font(.title2)
-                        .foregroundColor(.gray)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
                 }
 
-                // Summary/Details - only show when expanded
+                // Summary/Details (conditionally shown)
                 if isExpanded {
                     if hasSummary {
                         Text(savedAdventure.adventure.summary)
@@ -109,12 +111,11 @@ struct HistoryCardView: View {
                             .foregroundStyle(Color.primaryAppColor)
                     }
                     Spacer()
-                    Button(action: { showDeleteConfirmation = true }) {
-                        Image(systemName: "trash.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.gray)
-                            .padding(5)
-                    }
+                    Image(systemName: "chevron.down")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                        .padding(5)
+                        .rotationEffect(.degrees(isExpanded ? -180 : 0))
                 }
             }
             .padding()
