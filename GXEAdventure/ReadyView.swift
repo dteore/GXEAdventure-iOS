@@ -53,7 +53,7 @@ struct ReadyView: View {
                     .foregroundStyle(Color.bodyTextColor)
                     .multilineTextAlignment(.leading) // Left-align title
                     .frame(maxWidth: .infinity, alignment: .leading) // Force full width and leading alignment
-                    .padding(.horizontal, 40) // 40px horizontal padding
+                    .padding(.horizontal, 30) // 30px horizontal padding
 
                 // Display content from the "start" node
                 if let startNode = adventure.nodes.first(where: { $0.type == "start" }) {
@@ -62,7 +62,7 @@ struct ReadyView: View {
                         .foregroundStyle(Color.bodyTextColor)
                         .multilineTextAlignment(.leading) // Left-align content
                         .frame(maxWidth: .infinity, alignment: .leading) // Force full width and leading alignment
-                        .padding(.horizontal, 40) // 40px horizontal padding
+                        .padding(.horizontal, 30) // 30px horizontal padding
                         .padding(.top, 10)
                 } else {
                     Text("No starting information available.")
@@ -70,7 +70,7 @@ struct ReadyView: View {
                         .foregroundStyle(Color.bodyTextColor)
                         .multilineTextAlignment(.leading) // Left-align fallback content
                         .frame(maxWidth: .infinity, alignment: .leading) // Force full width and leading alignment
-                        .padding(.horizontal, 40) // 40px horizontal padding
+                        .padding(.horizontal, 30) // 30px horizontal padding
                         .padding(.top, 10)
                 }
 

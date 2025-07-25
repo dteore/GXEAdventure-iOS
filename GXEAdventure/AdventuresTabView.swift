@@ -101,6 +101,7 @@ struct AdventuresTabView: View {
                 adventureViewModel.apiError = nil
             })
         }
+        .tint(.blue)
         .onAppear(perform: adventureViewModel.locationManager.fetchLocationStatus)
     }
 }
