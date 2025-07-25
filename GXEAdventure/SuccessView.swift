@@ -84,18 +84,18 @@ struct SuccessView: View {
             
             // MARK: - Action Buttons
             VStack(spacing: 15) {
-                Button("NEW ADVENTURE") {
-                    onNewAdventure()
-                    dismissParent()
-                }
-                .buttonStyle(SecondaryActionButtonStyle())
-                
                 Button("KEEP GOING") {
                     dismissParent()
                     let shouldBeRandom = adventure.type.isEmpty && adventure.theme == nil
                     onKeepGoing(shouldBeRandom, adventure.type, adventure.theme)
                 }
                 .buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
+                
+                Button("NEW ADVENTURE") {
+                    onNewAdventure()
+                    dismissParent()
+                }
+                .buttonStyle(SecondaryActionButtonStyle())
             }
         }
         .padding()

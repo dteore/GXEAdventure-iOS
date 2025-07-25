@@ -50,24 +50,27 @@ struct ReadyView: View {
 
                 Text(adventure.title)
                     .font(.title2.weight(.semibold))
-                    .foregroundStyle(Color.bodyTextColor) // FIX: Explicit color
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
+                    .foregroundStyle(Color.bodyTextColor)
+                    .multilineTextAlignment(.leading) // Left-align title
+                    .frame(maxWidth: .infinity, alignment: .leading) // Force full width and leading alignment
+                    .padding(.horizontal, 40) // 40px horizontal padding
 
                 // Display content from the "start" node
                 if let startNode = adventure.nodes.first(where: { $0.type == "start" }) {
                     Text(startNode.content)
                         .font(.body)
                         .foregroundStyle(Color.bodyTextColor)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+                        .multilineTextAlignment(.leading) // Left-align content
+                        .frame(maxWidth: .infinity, alignment: .leading) // Force full width and leading alignment
+                        .padding(.horizontal, 40) // 40px horizontal padding
                         .padding(.top, 10)
                 } else {
                     Text("No starting information available.")
                         .font(.body)
                         .foregroundStyle(Color.bodyTextColor)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+                        .multilineTextAlignment(.leading) // Left-align fallback content
+                        .frame(maxWidth: .infinity, alignment: .leading) // Force full width and leading alignment
+                        .padding(.horizontal, 40) // 40px horizontal padding
                         .padding(.top, 10)
                 }
 
