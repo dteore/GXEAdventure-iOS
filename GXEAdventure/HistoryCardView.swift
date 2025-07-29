@@ -184,7 +184,10 @@ struct HistoryCardView_Previews: PreviewProvider {
                         createdAt: "",
                         updatedAt: "",
                         waypointCount: 0,
-                        reward: ""
+                        reward: "",
+                        prompt: nil,
+                        mapStyle: nil,
+                        path: nil
                     ),
                     savedDate: Date()
                 ),
@@ -212,7 +215,10 @@ struct HistoryCardView_Previews: PreviewProvider {
                         createdAt: "",
                         updatedAt: "",
                         waypointCount: 0,
-                        reward: ""
+                        reward: "",
+                        prompt: nil,
+                        mapStyle: nil,
+                        path: nil
                     ),
                     savedDate: Date()
                 ),

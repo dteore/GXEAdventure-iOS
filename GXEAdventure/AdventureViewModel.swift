@@ -26,18 +26,15 @@ class AdventureViewModel: ObservableObject {
     }
 
     /// Generates a creative and varied prompt for the AI.
-    private func generateCreativePrompt(isRandom: Bool, type: String?, theme: String?) -> String {
-        if isRandom {
-            let randomPrompts = [
-                "Take me on a surprising and delightful random adventure. Show me something I'd never find on my own.",
-                "I'm feeling spontaneous! You are a guide to hidden gems. Create a unique and unexpected adventure for me.",
-                "Generate a random adventure that feels like a story unfolding. What secrets does this place hold?"
-            ]
-            return randomPrompts.randomElement() ?? "Take me on a random adventure."
-        }
+    private func generateCreativePrompt(theme: String?, for location: CLLocation?) async -> String {
+        let adventureType = "tour"
+        var locationInfo = ""
 
-        guard let adventureType = type, let adventureTheme = theme else {
-            return generateCreativePrompt(isRandom: true, type: nil, theme: nil)
+        if let location = location {
+            let geocoder = CLGeocoder()
+            if let placemark = try? await geocoder.reverseGeocodeLocation(location).first {
+                locationInfo = " in \(placemark.locality ?? ""), \(placemark.administrativeArea ?? "")"
+            }
         }
 
         // Select a random persona from the PersonaService
@@ -45,14 +42,15 @@ class AdventureViewModel: ObservableObject {
             // Use the persona's prompt template, replacing placeholders
             return randomPersona.promptTemplate
                 .replacingOccurrences(of: "{adventureType}", with: adventureType)
-                .replacingOccurrences(of: "{adventureTheme}", with: adventureTheme)
+                .replacingOccurrences(of: "{adventureTheme}", with: theme ?? "")
+                + locationInfo
         } else {
             // Fallback to a generic prompt if no personas are available
-            return "Take me on a \(adventureType) about \(adventureTheme)."
+            return "Take me on a \(adventureType) about \(theme ?? "something interesting")\(locationInfo)."
         }
     }
 
-    func generateAdventure(isRandom: Bool, type: String? = nil, theme: String? = nil) {
+    func generateAdventure(theme: String? = nil) {
         isLoading = true
         adventureTask?.cancel() // Cancel any ongoing task
         adventureTask = Task {
@@ -60,10 +58,7 @@ class AdventureViewModel: ObservableObject {
             do {
                 let playerID = "test-player-id-\(UUID().uuidString.prefix(8))"
                 
-                // --- PROMPT GENERATION LOGIC UPDATED ---
-                // The old if/else block is replaced with a single call to our new creative function.
-                let promptText = generateCreativePrompt(isRandom: isRandom, type: type, theme: theme)
-                // --- END OF UPDATE ---
+                let promptText = await generateCreativePrompt(theme: theme, for: currentLocation)
 
                 var origin: [String: Double]? = nil
                 if let location = currentLocation {
@@ -73,9 +68,10 @@ class AdventureViewModel: ObservableObject {
                 let (adventureResponse, _) = try await AdventureService.generateAdventure(
                     prompt: promptText,
                     playerProfileID: playerID,
-                    type: isRandom ? nil : type,
+                    type: "scavenger_hunt",
                     origin: origin,
-                    theme: isRandom ? nil : theme
+                    distanceKm: 8,
+                    theme: theme
                 )
                 
                 await MainActor.run {

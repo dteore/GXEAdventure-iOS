@@ -191,7 +191,10 @@ struct SuccessView_Previews: PreviewProvider {
                 createdAt: "",
                 updatedAt: "",
                 waypointCount: 0,
-                reward: "100 N"
+                reward: "100 N",
+                prompt: nil,
+                mapStyle: nil,
+                path: nil
             ),
             onNewAdventure: { print("New Adventure Tapped") },
             onKeepGoing: { isRandom, type, theme in

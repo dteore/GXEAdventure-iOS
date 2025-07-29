@@ -11,11 +11,11 @@ import SwiftUI
 // MARK: - Adventures Tab
 struct AdventuresTabView: View {
     @Binding var showSettings: Bool
-    @State private var selectedAdventureType: String? = nil
     @State private var selectedTheme: String?
     
     @EnvironmentObject private var adventureViewModel: AdventureViewModel
     @EnvironmentObject private var notificationManager: NotificationManager
+    @EnvironmentObject private var savedAdventuresManager: SavedAdventuresManager
 
     private var isLocationAuthorized: Bool {
         adventureViewModel.locationManager.authorizationStatus == .authorizedWhenInUse || adventureViewModel.locationManager.authorizationStatus == .authorizedAlways
@@ -28,9 +28,7 @@ struct AdventuresTabView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                if isLocationAuthorized && isNotificationAuthorized {
-                    NotificationBannerView()
-                }
+                
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
@@ -39,17 +37,16 @@ struct AdventuresTabView: View {
                         })
                         
                         if isLocationAuthorized {
-                            StartAdventureSection(isLoading: $adventureViewModel.isLoading, generateAction: { adventureViewModel.generateAdventure(isRandom: true, type: nil, theme: nil) })
+                            StartAdventureSection(isLoading: $adventureViewModel.isLoading, generateAction: { adventureViewModel.generateAdventure(theme: nil) })
                         } else {
                             LocationRequiredSection()
                         }
                         
                         CustomizationSection(
-                            selectedAdventureType: $selectedAdventureType,
                             selectedTheme: $selectedTheme,
                             isLoading: $adventureViewModel.isLoading,
                             isLocationAuthorized: isLocationAuthorized,
-                            generateAction: { adventureViewModel.generateAdventure(isRandom: false, type: selectedAdventureType, theme: selectedTheme) }
+                            generateAction: { adventureViewModel.generateAdventure(theme: selectedTheme) }
                         )
                     }
                 }
@@ -64,7 +61,7 @@ struct AdventuresTabView: View {
                 }
             }
         )
-        .fullScreenCover(isPresented: $adventureViewModel.isAdventureReady, onDismiss: {
+                .fullScreenCover(isPresented: $adventureViewModel.isAdventureReady, onDismiss: {
             // This closure is called after ReadyView is dismissed.
             // If an adventure was prepared, present it now.
             if let adventure = adventureViewModel.adventure {
@@ -73,8 +70,8 @@ struct AdventuresTabView: View {
             adventureViewModel.adventure = nil // Clear the adventure once it's presented or dismissed
         }) {
             if let adventure = adventureViewModel.adventure {
-                ReadyView(adventure: adventure, generateNewAdventure: { isRandom, type, theme in
-                    adventureViewModel.generateAdventure(isRandom: isRandom, type: type, theme: theme)
+                ReadyView(adventure: adventure, generateNewAdventure: { theme in
+                    adventureViewModel.generateAdventure(theme: theme)
                 }, onStartAdventure: { startedAdventure in
                     adventureViewModel.isAdventureReady = false // Dismiss ReadyView
                     adventureViewModel.presentedAdventure = startedAdventure
@@ -82,21 +79,20 @@ struct AdventuresTabView: View {
             }
         }
         .fullScreenCover(item: $adventureViewModel.presentedAdventure, onDismiss: {
-            // This closure is called after TourView/ScavengerHuntView is dismissed.
+            if let adventure = adventureViewModel.presentedAdventure {
+                savedAdventuresManager.addRevealedArea(for: adventure)
+            }
+            // This closure is called after TourView is dismissed.
             adventureViewModel.presentedAdventure = nil
         }) { adventure in
-            if adventure.type.lowercased() == "tour" {
-                TourView(adventure: adventure)
-            } else {
-                ScavengerHuntView(adventure: adventure)
-            }
+            TourView(adventure: adventure)
         }
         .alert(item: $adventureViewModel.apiError) { errorWrapper in
             Alert(title: Text("Error"), message: Text(errorWrapper.error.localizedDescription), primaryButton: .default(Text("OK")) { adventureViewModel.apiError = nil }, secondaryButton: .default(Text("Retry")) { 
-                if let lastType = selectedAdventureType, let lastTheme = selectedTheme {
-                    adventureViewModel.generateAdventure(isRandom: false, type: lastType, theme: lastTheme)
+                if let lastTheme = selectedTheme {
+                    adventureViewModel.generateAdventure(theme: lastTheme)
                 } else {
-                    adventureViewModel.generateAdventure(isRandom: true, type: nil, theme: nil)
+                    adventureViewModel.generateAdventure(theme: nil)
                 }
                 adventureViewModel.apiError = nil
             })

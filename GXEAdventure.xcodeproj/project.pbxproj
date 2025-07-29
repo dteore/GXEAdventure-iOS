@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6F0000012E09D45300000000 /* HoudiniFLip_Exploration.Redshift_ROP2_1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6F0000002E09D45300000000 /* HoudiniFLip_Exploration.Redshift_ROP2_1.mp4 */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		6FD4BFCC2E32D2930061EC12 /* Embed ExtensionKit Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -20,6 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6F0000002E09D45300000000 /* HoudiniFLip_Exploration.Redshift_ROP2_1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = video.mp4; path = "GXEAdventure/Assets.xcassets/HoudiniFLip_Exploration.Redshift_ROP2_1.dataset/HoudiniFLip_Exploration.Redshift_ROP2_1.mp4"; sourceTree = "<group>"; };
 		6FFF62292E09D453004D09D3 /* NVRSE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NVRSE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -136,6 +141,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F0000012E09D45300000000 /* HoudiniFLip_Exploration.Redshift_ROP2_1.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

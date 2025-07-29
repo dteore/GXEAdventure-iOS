@@ -11,8 +11,8 @@ import Foundation
 // MARK: - Networking Models and Service
 
 public struct AdventureNodeMetadata: Codable {
-    let orderIndex: Int
-    let isAnswerNode: Bool
+    let orderIndex: Int?
+    let isAnswerNode: Bool?
     let type: String?
     let metadata: String?
 }
@@ -22,6 +22,37 @@ public struct AdventureNode: Codable, Identifiable {
     let type: String
     let content: String
     let metadata: AdventureNodeMetadata
+}
+
+public struct Waypoint: Codable, Identifiable {
+    public let id: String
+    let pathId: String
+    let order: Int
+    let lat: String
+    let lng: String
+    let landmarkName: String
+    let createdAt: String
+    let updatedAt: String
+}
+
+public struct Path: Codable, Identifiable {
+    public let id: String
+    let adventureId: String
+    let originLat: String
+    let originLng: String
+    let distanceKmString: String
+    let segments: Int
+    let createdAt: String
+    let updatedAt: String
+    let waypoints: [Waypoint]
+
+    var distanceKm: Double {
+        return Double(distanceKmString) ?? 0.0
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, adventureId, originLat, originLng, distanceKmString = "distanceKm", segments, createdAt, updatedAt, waypoints
+    }
 }
 
 public struct Adventure: Codable, Identifiable {
@@ -40,6 +71,8 @@ public struct Adventure: Codable, Identifiable {
     let waypointCount: Int
     let reward: String?
     var prompt: String? // Add prompt field
+    let mapStyle: String?
+    let path: Path?
 }
 
 struct AdventureResponse: Decodable {
@@ -57,6 +90,10 @@ struct AdventureService {
             "playerProfile": ["id": playerProfileID]
         ]
         
+        if let theme = theme {
+            requestBody["theme"] = theme
+        }
+
         if let type = type {
             requestBody["type"] = type
         }
@@ -65,10 +102,6 @@ struct AdventureService {
         }
         
         requestBody["segments"] = segments ?? 6
-        
-        if let theme = theme {
-            requestBody["theme"] = theme
-        }
         
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         var request = URLRequest(url: url)

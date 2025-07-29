@@ -27,7 +27,6 @@ struct ContentView: View {
                         .padding(.top, 25)
                 }
                 .tag(Tab.adventures)
-
             HistoryTabView(showSettings: $showSettings)
                 .tabItem {
                     Label("History", systemImage: "book.closed.fill")

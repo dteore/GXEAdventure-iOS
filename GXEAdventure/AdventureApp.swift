@@ -40,6 +40,7 @@ struct AdventureApp: App {
 
 /// This view now contains its own private color definition to prevent crashes on launch.
 private struct RootView: View {
+    @EnvironmentObject var savedAdventuresManager: SavedAdventuresManager
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     @State private var showSplash: Bool = true
 
@@ -52,6 +53,9 @@ private struct RootView: View {
             } else {
                 ContentView()
             }
+        }
+        .onAppear {
+            savedAdventuresManager.loadData()
         }
         // FIX: Use the explicitly defined color from the private extension below.
         // This prevents the app from crashing by trying to find a color in the asset catalog.

@@ -18,6 +18,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var userLocation: CLLocation?
     @Published var deviceHeading: CLHeading?
     @Published var smoothedHeading: Double = 0.0
+    @Published var exploredPath: [CLLocation] = []
 
     override init() {
         super.init()
@@ -70,6 +71,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         Task { @MainActor in
             // Update the user's location with the latest reading.
             self.userLocation = locations.last
+            if let location = locations.last {
+                self.exploredPath.append(location)
+            }
         }
     }
     

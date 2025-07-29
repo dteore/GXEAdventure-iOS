@@ -84,7 +84,6 @@ struct StartAdventureSection: View {
 }
 
 struct CustomizationSection: View {
-    @Binding var selectedAdventureType: String?
     @Binding var selectedTheme: String?
     @Binding var isLoading: Bool
     let isLocationAuthorized: Bool
@@ -96,14 +95,6 @@ struct CustomizationSection: View {
                 .font(.title.bold())
                 .foregroundStyle(Color.headingColor)
                 .padding(.top, 10)
-            Text("Type")
-                .font(.headline)
-                .foregroundStyle(Color.headingColor)
-            HStack(spacing: 15) {
-                TypeSelectionButton(title: "Tour", selection: $selectedAdventureType)
-                TypeSelectionButton(title: "Scavenger Hunt", selection: $selectedAdventureType, isEnabled: false)
-                Spacer()
-            }
             Text("Theme")
                 .font(.headline)
                 .foregroundStyle(Color.headingColor)

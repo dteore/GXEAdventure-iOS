@@ -23,6 +23,7 @@ struct LoadingView: View {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
                             .foregroundColor(.gray)
+                            
                     }
                     .padding(.leading, 10)
                     .padding(.top, 15)
