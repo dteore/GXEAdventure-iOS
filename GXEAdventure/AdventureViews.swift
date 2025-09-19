@@ -22,12 +22,12 @@ struct HeaderSection: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(nil)
                     .lineSpacing(-5)
-                    .foregroundStyle(Color.headingColor)
+                    .foregroundStyle(.white) // Changed to white
                     .padding(.top, 30)
 
                 Text("Explore your city with 5-15 minute mini-adventures. Choose a fast-paced scavenger hunt or a relaxed local tour. Your next discovery is right around the corner.")
                     .font(.body)
-                    .foregroundStyle(Color.bodyTextColor)
+                    .foregroundStyle(.white) // Changed to white
                     .padding(.top, 5)
             
                 .font(.body.weight(.semibold))
@@ -36,11 +36,11 @@ struct HeaderSection: View {
 
             }.padding(.horizontal, 20).padding(.bottom, 45)
             Button { showSettings = true } label: {
-                Image(systemName: "gearshape").font(.title2).foregroundStyle(Color.headingColor).padding(.top, 25).padding(.trailing, 20)
+                Image(systemName: "gearshape").font(.title2).foregroundStyle(.white).padding(.top, 25).padding(.trailing, 20) // Changed to white
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(red: 217/255, green: 217/255, blue: 217/255))
+        .background(Color.black) // Changed to black
     }
 }
 
@@ -69,17 +69,17 @@ struct StartAdventureSection: View {
         VStack(alignment: .leading, spacing: 5) {
             Text("Start your Adventure")
                 .font(.title.bold())
-                .foregroundStyle(Color.headingColor)
+                .foregroundStyle(.white) // Changed to white
             Text("Generate a random adventure, or customize yours with a type and a theme below.")
                 .font(.subheadline)
-                .foregroundStyle(Color.bodyTextColor)
+                .foregroundStyle(.white) // Changed to white
                 .padding(.top, 5)
                 .padding(.bottom, 25)
             Button("GENERATE RANDOM ADVENTURE") {
                 isLoading = true
                 generateAction()
             }.buttonStyle(PressableButtonStyle(normalColor: .primaryAppColor, pressedColor: .pressedButtonColor))
-        }.padding(.horizontal).padding(.vertical, 25).background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0))
+        }.padding(.horizontal).padding(.vertical, 25).background(Color.appBackground) // Changed to appBackground
     }
 }
 
@@ -93,11 +93,11 @@ struct CustomizationSection: View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Customization")
                 .font(.title.bold())
-                .foregroundStyle(Color.headingColor)
+                .foregroundStyle(.white) // Changed to white
                 .padding(.top, 10)
             Text("Theme")
                 .font(.headline)
-                .foregroundStyle(Color.headingColor)
+                .foregroundStyle(.white) // Changed to white
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
                 ForEach(themes, id: \.self) { theme in ThemeSelectionButton(title: theme, selection: $selectedTheme) }
             }
@@ -111,7 +111,7 @@ struct CustomizationSection: View {
             .padding(.bottom, 35)
         }
         .padding()
-        .background(Color(red: 228/255, green: 228/255, blue: 228/255))
+        .background(Color.black) // Changed to black
         .opacity(isLocationAuthorized ? 1.0 : 0.5)
     }
 }

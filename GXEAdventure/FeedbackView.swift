@@ -40,7 +40,7 @@ struct FeedbackView: View {
                     HStack(spacing: 10) {
                         Text("WOULD YOU RECOMMEND THIS APP?")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(Color.bodyTextColor)
+                            .foregroundStyle(.white)
                         
                         Spacer()
 
@@ -51,15 +51,15 @@ struct FeedbackView: View {
                     // Feedback Message Input
                     ZStack(alignment: .topLeading) {
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.white)
+                            .fill(Color.black)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                    .stroke(Color.white.opacity(0.5), lineWidth: 1)
                             )
                         
                         if feedbackMessage.isEmpty {
                             Text("TYPE YOUR MESSAGE...")
-                                .foregroundStyle(Color.gray.opacity(0.8))
+                                .foregroundStyle(.white.opacity(0.8))
                                 .padding(EdgeInsets(top: 8, leading: 5, bottom: 0, trailing: 0))
                                 .allowsHitTesting(false)
                         }
@@ -74,7 +74,7 @@ struct FeedbackView: View {
                     Toggle(isOn: $wantsFollowUp.animation()) {
                         Text("FOLLOW UP WITH ME REGARDING MY FEEDBACK")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(Color.bodyTextColor)
+                            .foregroundStyle(.white)
                     }
                     .toggleStyle(CheckboxToggleStyle())
                     .padding(.top, 10)
@@ -105,10 +105,11 @@ struct FeedbackView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Back") { dismiss() }
+                        .foregroundColor(.white)
                 }
             }
             .background(Color.appBackground.ignoresSafeArea())
-            .preferredColorScheme(.light)
+            .preferredColorScheme(.dark)
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
@@ -175,14 +176,14 @@ private struct RecommendationButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.footnote.weight(.semibold))
-            .foregroundColor(isSelected ? .white : Color.primaryAppColor)
+            .foregroundColor(isSelected ? .white : .white)
             .padding(.vertical, 8)
             .frame(width: 60)
             .background(isSelected ? Color.primaryAppColor : Color.clear)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.primaryAppColor, lineWidth: 1.5)
+                    .stroke(Color.white, lineWidth: 1.5)
             )
     }
 }
@@ -209,10 +210,10 @@ private struct CustomTextFieldStyle: TextFieldStyle {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.white)
+                    .fill(Color.black)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                            .stroke(Color.white.opacity(0.5), lineWidth: 1)
                     )
             )
     }
@@ -226,4 +227,3 @@ struct FeedbackView_Previews: PreviewProvider {
         }
     }
 }
-

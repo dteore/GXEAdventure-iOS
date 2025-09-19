@@ -22,8 +22,8 @@ struct AdventureApp: App {
         _savedAdventuresManager = StateObject(wrappedValue: SavedAdventuresManager())
         _adventureViewModel = StateObject(wrappedValue: AdventureViewModel(locationManager: newLocationManager))
         UITabBar.appearance().unselectedItemTintColor = UIColor(Color.gray.opacity(0.6))
-        UINavigationBar.appearance().barTintColor = UIColor.white
-        UINavigationBar.appearance().backgroundColor = UIColor.white
+        UINavigationBar.appearance().barTintColor = UIColor.black
+        UINavigationBar.appearance().backgroundColor = UIColor.black
         UINavigationBar.appearance().isTranslucent = false
     }
 

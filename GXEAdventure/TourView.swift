@@ -56,13 +56,13 @@ public struct TourView: View {
                     VStack(spacing: 10) {
                         Text(adventure.title)
                             .font(.title.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.white) // Changed to white
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         if adventure.nodes.indices.contains(currentNodeIndex) {
                             Text(adventure.nodes[currentNodeIndex].content)
                                 .font(.body)
-                                .foregroundStyle(.white.opacity(0.8))
+                                .foregroundStyle(.white.opacity(0.8)) // Changed to white
                                 .multilineTextAlignment(.leading)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -87,7 +87,7 @@ public struct TourView: View {
                         }
                     }
                     .padding(40)
-                    .background(Color.headingColor)
+                    .background(Color.appBackground) // Changed to appBackground
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .padding(.horizontal)
                     .padding(.top, 25)
@@ -136,7 +136,7 @@ public struct TourView: View {
                     .padding(.top, 20)
                 }
             }
-            .background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0).ignoresSafeArea())
+            .background(Color.black.ignoresSafeArea()) // Changed to black
             .navigationBarHidden(true)
             .onAppear(perform: setupInitialRegion)
             .onChange(of: currentNodeIndex) { 
@@ -149,10 +149,10 @@ public struct TourView: View {
                     }
                 }
             }
-            .alert("Answer", isPresented: $showAnswerAlert, presenting: answerContent) { content in
+            .alert("Answer", isPresented: $showAnswerAlert) { // Removed presenting: answerContent
                 Button("Next") { currentNodeIndex += 2 }
-            } message: { content in
-                Text(content)
+            } message: {
+                Text(answerContent ?? "") // Directly use answerContent
             }
         }
         .sheet(isPresented: $isMapFullScreen) {

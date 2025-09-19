@@ -12,10 +12,12 @@ struct ReadyView: View {
     let adventure: Adventure
     let generateNewAdventure: (String?) -> Void
     let onStartAdventure: (Adventure) -> Void
+    let onAbandon: () -> Void
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var adventureViewModel: AdventureViewModel
 
     @State private var showingDetailsAlert: Bool = false
+    @State private var showAbandonConfirmation = false
 
     var body: some View {
         ZStack {
@@ -25,7 +27,7 @@ struct ReadyView: View {
             VStack(spacing: 20) {
                 HStack {
                     // FIX: Button moved to the leading edge (left) with consistent padding.
-                    Button(action: { dismiss() }) {
+                    Button(action: { showAbandonConfirmation = true }) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
                             .foregroundColor(.gray)
@@ -91,6 +93,17 @@ struct ReadyView: View {
             }
             .padding(.vertical, 50)
         }
+        .sheet(isPresented: $showAbandonConfirmation) {
+            AbandonAdventureConfirmationView(
+                onAbandon: {
+                    showAbandonConfirmation = false
+                    onAbandon()
+                },
+                onKeepPlaying: {
+                    showAbandonConfirmation = false
+                }
+            )
+        }
     }
 }
 
@@ -119,7 +132,8 @@ struct ReadyView_Previews: PreviewProvider {
             generateNewAdventure: { theme in
                 print("Generate New Adventure from ReadyView Preview. theme: \(theme ?? "nil")")
             },
-            onStartAdventure: { _ in }
+            onStartAdventure: { _ in },
+            onAbandon: { print("Abandon adventure from preview") }
         )
     }
 }

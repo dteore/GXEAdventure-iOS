@@ -11,7 +11,7 @@ struct HistoryTabView: View {
                 HistoryHeaderView(showSettings: $showSettings)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .background(Color.appBackground)
+                    .background(Color.black) // Changed to black
 
                 if savedAdventuresManager.savedAdventures.isEmpty {
                     Text("No adventures saved yet. Complete an adventure to see it here!")
@@ -39,7 +39,7 @@ struct HistoryTabView: View {
                 }
             }
             .listStyle(.plain) // Use plain style for custom appearance
-            .background(Color.appBackground.ignoresSafeArea())
+            .background(Color.black.ignoresSafeArea()) // Changed to black
             .navigationBarHidden(true)
         }
         .preferredColorScheme(.light)
@@ -68,7 +68,7 @@ private struct HistoryHeaderView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 20) // Adjusted padding to match card spacing
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(red: 217/255, green: 217/255, blue: 217/255))
+            .background(Color.black) // Changed to black
 
             Button { showSettings = true } label: {
                 Image(systemName: "gearshape")
@@ -88,4 +88,3 @@ struct HistoryTabView_Previews: PreviewProvider {
             .environmentObject(AdventureViewModel(locationManager: LocationManager()))
     }
 }
-

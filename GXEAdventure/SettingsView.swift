@@ -31,6 +31,8 @@ struct SettingsView: View {
                 PermissionsSection()
                 GeneralSection(activeSheet: $activeSheet)
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black) // Apply background to the Form
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -38,7 +40,7 @@ struct SettingsView: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .foregroundColor(.primaryAppColor)
+                    .foregroundColor(.white) // Ensure text is visible on dark background
                 }
             }
             // A single sheet modifier to handle all modal presentations.
@@ -56,7 +58,7 @@ struct SettingsView: View {
                 }
             }
         }
-        .background(Color.appBackground.ignoresSafeArea())
+        .background(Color.black.ignoresSafeArea()) // Apply background to the NavigationView
     }
 }
 
@@ -66,7 +68,7 @@ private struct PermissionsSection: View {
     @EnvironmentObject private var adventureViewModel: AdventureViewModel
     
     var body: some View {
-        Section(header: Text("Device Permissions")) {
+        Section(header: Text("Device Permissions").foregroundColor(.white).padding(.top, 25)) {
             PermissionRow(
                 title: "Location Services",
                 iconName: "location.fill",
@@ -87,8 +89,9 @@ private struct PermissionsSection: View {
                     UIApplication.shared.open(url)
                 }
             }
-            .foregroundColor(.primaryAppColor)
+            .foregroundColor(.blue) // Make it blue to look clickable
         }
+        .listRowBackground(Color.black) // Apply background to list rows
         // Fetch the latest permission statuses when the view appears or returns to the foreground.
         .onAppear {
             notificationManager.fetchNotificationStatus()
@@ -128,16 +131,17 @@ private struct GeneralSection: View {
     @Binding var activeSheet: SettingsView.ActiveSheet?
     
     var body: some View {
-        Section(header: Text("General")) {
+        Section(header: Text("General").foregroundColor(.white)) {
             Button("Terms of Service") { activeSheet = .terms }
-                .foregroundColor(.primary)
+                .foregroundColor(.white) // Ensure text is visible on dark background
             
             Button("Privacy Policy") { activeSheet = .privacy }
-                .foregroundColor(.primary)
+                .foregroundColor(.white) // Ensure text is visible on dark background
             
             Button("Send Feedback") { activeSheet = .feedback }
-                .foregroundColor(.primary)
+                .foregroundColor(.white) // Ensure text is visible on dark background
         }
+        .listRowBackground(Color.black) // Apply background to list rows
     }
 }
 
@@ -154,10 +158,11 @@ private struct PermissionRow: View {
                 .foregroundColor(iconColor)
                 .frame(width: 25, alignment: .center)
             Text(title)
+                .foregroundColor(.white) // Ensure text is visible on dark background
             Spacer()
             Text(status)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(.white) // Ensure text is visible on dark background
         }
     }
 }

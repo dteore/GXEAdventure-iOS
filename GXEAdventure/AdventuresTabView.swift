@@ -51,16 +51,12 @@ struct AdventuresTabView: View {
                     }
                 }
             }
-            .background(Color.appBackground.ignoresSafeArea())
+            .background(Color.black.ignoresSafeArea()) // Changed to black
             .navigationBarHidden(true)
         }
-        .overlay(
-            Group {
-                if adventureViewModel.isLoading {
-                    LoadingView(isLoading: $adventureViewModel.isLoading, cancelAction: adventureViewModel.cancelAdventure)
-                }
-            }
-        )
+        .fullScreenCover(isPresented: $adventureViewModel.isLoading) {
+            LoadingView(isLoading: .constant(true), cancelAction: adventureViewModel.cancelAdventure)
+        }
                 .fullScreenCover(isPresented: $adventureViewModel.isAdventureReady, onDismiss: {
             // This closure is called after ReadyView is dismissed.
             // If an adventure was prepared, present it now.
@@ -75,6 +71,9 @@ struct AdventuresTabView: View {
                 }, onStartAdventure: { startedAdventure in
                     adventureViewModel.isAdventureReady = false // Dismiss ReadyView
                     adventureViewModel.presentedAdventure = startedAdventure
+                }, onAbandon: {
+                    adventureViewModel.isAdventureReady = false
+                    adventureViewModel.adventure = nil
                 })
             }
         }

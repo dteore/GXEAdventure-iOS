@@ -99,7 +99,7 @@ struct SuccessView: View {
             }
         }
         .padding()
-        .background(Color(red: 0xF1 / 255.0, green: 0xF1 / 255.0, blue: 0xF1 / 255.0).ignoresSafeArea())
+        .background(Color.appBackground.ignoresSafeArea())
         .sheet(isPresented: $showFeedbackSheet) {
             FeedbackView()
         }

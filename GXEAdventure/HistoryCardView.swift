@@ -50,7 +50,7 @@ struct HistoryCardView: View {
                 HStack(alignment: .top) {
                     Text(savedAdventure.adventure.title)
                         .font(.title2.bold())
-                        .foregroundStyle(Color.headingColor)
+                        .foregroundStyle(.white) // Changed to white
                         .lineLimit(isExpanded ? nil : 2)
                         .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.leading)
@@ -82,13 +82,13 @@ struct HistoryCardView: View {
                     if hasSummary {
                         Text(savedAdventure.adventure.summary)
                             .font(.body)
-                            .foregroundStyle(Color.bodyTextColor)
+                            .foregroundStyle(.white) // Changed to white
                             .multilineTextAlignment(.leading)
                             .padding(.top, 5)
                     } else {
                         Text("No summary available for this adventure.")
                             .font(.body)
-                            .foregroundStyle(Color.bodyTextColor)
+                            .foregroundStyle(.white) // Changed to white
                             .multilineTextAlignment(.leading)
                             .padding(.top, 5)
                     }
@@ -98,10 +98,10 @@ struct HistoryCardView: View {
                 HStack(spacing: 5) {
                     Image(systemName: "mappin.and.ellipse")
                         .font(.subheadline)
-                        .foregroundStyle(Color.bodyTextColor)
+                        .foregroundStyle(.white) // Changed to white
                     Text(savedAdventure.adventure.location)
                         .font(.subheadline)
-                        .foregroundStyle(Color.bodyTextColor)
+                        .foregroundStyle(.white) // Changed to white
                         .multilineTextAlignment(.leading)
                 }
 
@@ -109,10 +109,10 @@ struct HistoryCardView: View {
                 HStack(spacing: 5) {
                     Image(systemName: "calendar")
                         .font(.subheadline)
-                        .foregroundStyle(Color.bodyTextColor)
+                        .foregroundStyle(.white) // Changed to white
                     Text("Saved: \(savedAdventure.savedDate, formatter: DateFormatter.mediumDate)")
                         .font(.subheadline)
-                        .foregroundStyle(Color.bodyTextColor)
+                        .foregroundStyle(.white) // Changed to white
                 }
 
                 // Type and Theme Tags
@@ -125,15 +125,6 @@ struct HistoryCardView: View {
                         .cornerRadius(5)
                         .foregroundStyle(Color.primaryAppColor)
 
-                    if let theme = savedAdventure.adventure.theme {
-                        Text(theme)
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.primaryAppColor.opacity(0.1))
-                            .cornerRadius(5)
-                            .foregroundStyle(Color.primaryAppColor)
-                    }
                     Spacer()
                     Image(systemName: "chevron.right")
                         .font(.title2)
@@ -144,7 +135,7 @@ struct HistoryCardView: View {
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.white)
+            .background(Color.appBackground) // Changed to appBackground
             .cornerRadius(10)
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
             .onTapGesture {
@@ -226,7 +217,7 @@ struct HistoryCardView_Previews: PreviewProvider {
                     print("Delete adventure with ID: \(id)")
                 },
                 onToggleFavorite: { id in
-                    print("Toggle favorite for adventure with ID: \(id)")
+                    print("Toggle favorite for ID: \(id)")
                 }
             )
         }
